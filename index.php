@@ -58,6 +58,39 @@ html, body{
 .alert-custom{position:fixed;top:20px;right:20px;background:#ef4444;padding:15px 25px;border-radius:10px;display:none;}
 
 
+/* ===== FUTURISTIC AI STYLE ===== */
+
+.chart-card{
+    position:relative;
+    background: linear-gradient(145deg, rgba(15,23,42,0.7), rgba(30,58,138,0.4));
+    border:1px solid rgba(56,189,248,0.2);
+    box-shadow: 0 0 30px rgba(56,189,248,0.15);
+    backdrop-filter: blur(15px);
+    overflow:hidden;
+}
+
+/* Animated scanning line */
+.chart-card::before{
+    content:"";
+    position:absolute;
+    top:-100%;
+    left:0;
+    width:100%;
+    height:100%;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(56,189,248,0.15),
+        transparent
+    );
+    animation: scan 6s linear infinite;
+}
+
+@keyframes scan{
+    0%{top:-100%;}
+    100%{top:100%;}
+}
+    
 /* ================= LOADING SCREEN PERFECT CENTER ================= */
 #loadingScreen{
     position:fixed;
