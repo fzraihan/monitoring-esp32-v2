@@ -555,6 +555,17 @@ $latest = $data[0];
     Data diambil otomatis dari ESP32 melalui Supabase Cloud setiap 10 detik
 </div>
 
+<!-- =================AI SUMMARY VISUAL================= -->
+    <div class="card-custom mb-4">
+    <h5 class="mb-3">AI Environmental Index</h5>
+
+    <div class="progress mb-3" style="height:20px;">
+        <div id="indexBar" class="progress-bar bg-info" style="width:0%"></div>
+    </div>
+
+    <div id="indexLabel"></div>
+</div>
+    
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
@@ -730,6 +741,38 @@ document.getElementById("lastUpdate").innerHTML =
 setInterval(updateClock,1000);
 updateClock();
 
+function calculateIndex(){
+
+    let avgTemp = <?= round($stat['rata_suhu'],2) ?>;
+    let score = 100 - Math.abs(avgTemp - 28) * 5;
+
+    if(score < 0) score = 0;
+    if(score > 100) score = 100;
+
+    document.getElementById("indexBar").style.width = score+"%";
+    document.getElementById("indexBar").innerText = Math.round(score)+"%";
+
+    let status = "OPTIMAL";
+    let color = "bg-success";
+
+    if(score < 60){
+        status = "WARNING";
+        color = "bg-warning";
+    }
+
+    if(score < 40){
+        status = "CRITICAL";
+        color = "bg-danger";
+    }
+
+    document.getElementById("indexBar").className = "progress-bar "+color;
+    document.getElementById("indexLabel").innerHTML =
+        "<strong>Status:</strong> "+status;
+}
+
+document.addEventListener("DOMContentLoaded", calculateIndex);
+
+    
 });
 </script>
 
