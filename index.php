@@ -405,6 +405,12 @@ html, body{
     margin-bottom:10px;
 }
 
+    #tsparticles{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+}
+
 </style>
 </head>
 
@@ -416,6 +422,20 @@ window.addEventListener("load", function(){
     setTimeout(()=>{
         loader.classList.add("fade-out");
     }, 800); // delay supaya smooth
+});
+
+        tsParticles.load("tsparticles", {
+    background: { color: "transparent" },
+    particles: {
+        number: { value: 40 },
+        color: { value: "#38bdf8" },
+        opacity: { value: 0.2 },
+        size: { value: 2 },
+        move: {
+            enable: true,
+            speed: 0.6
+        }
+    }
 });
 </script>
 
@@ -1388,6 +1408,11 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 
 
-<div class="ai-grid"></div>   
+<div class="ai-grid"></div> 
+
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <div id="tsparticles"></div>
+
+    
 </body>
 </html>
