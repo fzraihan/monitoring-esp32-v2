@@ -627,10 +627,6 @@ document.addEventListener("DOMContentLoaded", function(){
             y:{
                 ticks:{color:"#94a3b8"},
                 grid:{color:"rgba(255,255,255,0.05)"}
-            animation:{
-                 duration: 900,
-                easing: 'easeOutQuart'
-                }
             
             }
         }
