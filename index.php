@@ -597,18 +597,25 @@ document.addEventListener("DOMContentLoaded", function(){
         },
       
     options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        interaction:{
-            mode:"index",
-            intersect:false
-        },
-        plugins:{
-            legend:{
-                position:"top",
-                labels:{
-                    color:"white",
-                    padding:20
+    responsive:true,
+    maintainAspectRatio:false,
+
+    animation:{
+        duration: 900,
+        easing: 'easeOutQuart'
+    },
+
+    interaction:{
+        mode:"index",
+        intersect:false
+    },
+
+    plugins:{
+        legend:{
+            position:"top",
+            labels:{
+                color:"white",
+                padding:20
                 }
             },
             tooltip:{
