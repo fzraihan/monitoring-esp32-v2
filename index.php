@@ -37,9 +37,11 @@ body{
     color:white;
 }
 html, body{
+    height:100vh;
     margin:0;
     padding:0;
-    height:100%;
+    overflow:hidden;   /* body tidak scroll */
+}
 }
 
 @keyframes gradientMove{
