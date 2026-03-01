@@ -480,7 +480,12 @@ $latest = $data[0];
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-
+    
+    const canvas = document.getElementById("chartMulti");
+    if(!canvas){
+        console.log("Canvas tidak ditemukan");
+        return;
+    }
     const ctx = document.getElementById("chartMulti").getContext("2d");
 
     const gradientSuhu = ctx.createLinearGradient(0,0,0,400);
