@@ -819,7 +819,6 @@ $stat = [
        <div class="progress mb-3" style="height:20px;">
            <div id="indexBar" style="width:0%"></div>
        </div>
-       <div id="indexLabel"></div>
    </div>
     
 <!-- FILTER -->
