@@ -590,7 +590,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     function loadData(){
         console.log("Ambil data...");
-        fetch("ambil_data_supabase.php?t= + new Date().getTime())
+        fetch("ambil_data_supabase.php?t=" + new Date().getTime())
         .then(res=>res.json())
         .then(data=>{
 
