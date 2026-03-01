@@ -381,6 +381,17 @@ html, body{
     100%{opacity:1;}
 }
 
+.ai-grid{
+    position:fixed;
+    inset:0;
+    background-image:
+        linear-gradient(rgba(56,189,248,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none;
+    z-index:-1;
+}
+
 </style>
 </head>
 
@@ -1329,5 +1340,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 </script>
 
+
+<div class="ai-grid"></div>   
 </body>
 </html>
