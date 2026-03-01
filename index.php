@@ -1548,6 +1548,49 @@ document.addEventListener("DOMContentLoaded", function(){
 
 });
 
+    document.addEventListener("DOMContentLoaded", function(){
+
+    if(!window.location.href.includes("page=analisis")) return;
+
+    const bar = document.getElementById("indexBar");
+    const label = document.getElementById("indexLabel");
+
+    if(!bar || !label) return;
+
+    let avgTemp = parseFloat("<?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>");
+
+    let score = 100 - Math.abs(avgTemp - 28) * 5;
+
+    if(isNaN(score)) score = 0;
+    if(score < 0) score = 0;
+    if(score > 100) score = 100;
+
+    bar.style.transition = "width 1.5s ease";
+    bar.style.width = score + "%";
+    bar.innerText = Math.round(score) + "%";
+
+    let status = "OPTIMAL";
+    let color = "#22c55e";
+
+    if(score < 60){
+        status = "WARNING";
+        color = "#facc15";
+    }
+
+    if(score < 40){
+        status = "CRITICAL";
+        color = "#ef4444";
+    }
+
+    bar.style.backgroundColor = color;
+
+    label.innerHTML =
+        `<strong>Status:</strong>
+         <span style="color:${color}; font-weight:600;">
+            ${status}
+         </span>`;
+});
+
 </script>
 
 
