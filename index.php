@@ -555,17 +555,7 @@ $latest = $data[0];
     Data diambil otomatis dari ESP32 melalui Supabase Cloud setiap 10 detik
 </div>
 
-<!-- =================AI SUMMARY VISUAL================= -->
-    <div class="card-custom mb-4">
-    <h5 class="mb-3">AI Environmental Index</h5>
 
-    <div class="progress mb-3" style="height:20px;">
-        <div id="indexBar" class="progress-bar bg-info" style="width:0%"></div>
-    </div>
-
-    <div id="indexLabel"></div>
-</div>
-    
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
@@ -971,7 +961,17 @@ document.addEventListener("DOMContentLoaded", function(){
 
 </script>
 
+<!-- =================AI SUMMARY VISUAL================= -->
+    <div class="card-custom mb-4">
+    <h5 class="mb-3">AI Environmental Index</h5>
 
+    <div class="progress mb-3" style="height:20px;">
+        <div id="indexBar" class="progress-bar bg-info" style="width:0%"></div>
+    </div>
+
+    <div id="indexLabel"></div>
+</div>
+    
 
 <!-- Tren Data -->
 <div class="card-custom mb-4">
@@ -1445,6 +1445,46 @@ document.addEventListener("DOMContentLoaded", function(){
     renderGauge("#gaugeTanah", tanah, "%", "#facc15");
     renderGauge("#gaugeAngin", angin, "m/s", "#ef4444");
 
+document.addEventListener("DOMContentLoaded", function(){
+
+    const bar = document.getElementById("indexBar");
+    const label = document.getElementById("indexLabel");
+
+    if(!bar || !label){
+        console.log("Index element tidak ditemukan");
+        return;
+    }
+
+    let avgTemp = parseFloat("<?= round($stat['rata_suhu'],2) ?>");
+
+    let score = 100 - Math.abs(avgTemp - 28) * 5;
+
+    if(score < 0) score = 0;
+    if(score > 100) score = 100;
+
+    bar.style.transition = "width 1.5s ease";
+    bar.style.width = score + "%";
+    bar.innerText = Math.round(score) + "%";
+
+    let status = "OPTIMAL";
+    let color = "#22c55e";
+
+    if(score < 60){
+        status = "WARNING";
+        color = "#facc15";
+    }
+
+    if(score < 40){
+        status = "CRITICAL";
+        color = "#ef4444";
+    }
+
+    bar.style.backgroundColor = color;
+
+    label.innerHTML = `<strong>Status:</strong> 
+        <span style="color:${color}; font-weight:600;">
+            ${status}
+        </span>`;
 });
 
 
