@@ -1252,6 +1252,33 @@ if(searchInput)
 
 <script>
 
+document.addEventListener("DOMContentLoaded", function(){
+
+    if(!window.location.href.includes("page=laporan")) return;
+
+    const rows = document.querySelectorAll(".laporan-table tbody tr");
+    if(rows.length === 0) return;
+
+    let temps = [];
+    let overheat = 0;
+
+    rows.forEach(row=>{
+        let temp = parseFloat(row.cells[1].innerText);
+        temps.push(temp);
+
+        if(temp > 32){
+            overheat++;
+            row.style.backgroundColor = "rgba(239,68,68,0.15)";
+        }
+    });
+
+    document.getElementById("totalData").innerText = temps.length;
+    document.getElementById("maxTemp").innerText = Math.max(...temps)+" °C";
+    document.getElementById("minTemp").innerText = Math.min(...temps)+" °C";
+    document.getElementById("overheatCount").innerText = overheat;
+
+});
+    
 // Ambil semua tanggal unik dari tabel
 function populateDateFilter(){
 
