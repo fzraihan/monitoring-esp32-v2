@@ -684,22 +684,6 @@ document.getElementById("lastUpdate").innerHTML =
     `<span style="color:${color}">
         AI Status: ${status} | ${new Date().toLocaleTimeString()}
      </span>`;
-
-function animateNumber(element, newValue){
-    let start = 0;
-    let duration = 800;
-    let startTime = null;
-
-    function step(timestamp){
-        if(!startTime) startTime = timestamp;
-        let progress = Math.min((timestamp - startTime)/duration,1);
-        element.innerText = (progress * newValue).toFixed(1);
-        if(progress < 1){
-            requestAnimationFrame(step);
-        }
-    }
-    requestAnimationFrame(step);
-}
             
         });
     }
