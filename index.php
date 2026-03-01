@@ -1011,18 +1011,6 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 </script>
 
-<!-- =================AI SUMMARY VISUAL================= -->
-    <div class="card-custom mb-4">
-    <h5 class="mb-3">AI Environmental Index</h5>
-
-    <div class="progress mb-3" style="height:20px;">
-        <div id="indexBar" class="progress-bar bg-info" style="width:0%"></div>
-    </div>
-
-    <div id="indexLabel"></div>
-</div>
-    
-
 <!-- Tren Data -->
 <div class="card-custom mb-4">
 <h5 class="mb-4">Ringkasan Kondisi Terkini</h5>
