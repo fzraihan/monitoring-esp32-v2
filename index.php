@@ -392,6 +392,19 @@ html, body{
     z-index:-1;
 }
 
+.ai-clock{
+    font-size:28px;
+    font-weight:700;
+    text-align:right;
+    color:#38bdf8;
+    text-shadow:
+        0 0 5px #38bdf8,
+        0 0 10px #38bdf8,
+        0 0 20px #0ea5e9;
+    letter-spacing:2px;
+    margin-bottom:10px;
+}
+
 </style>
 </head>
 
@@ -502,8 +515,9 @@ $latest = $data[0];
 <div class="row">
     <div class="col-12">
         <div class="card-custom mb-4 chart-card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
+            <div class="ai-clock" id="aiClock"></div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
                     <h5 class="mb-1">📊 Grafik Parameter Real-Time</h5>
                     <small id="lastUpdate" style="opacity:0.6;"></small>
                 </div>
