@@ -627,6 +627,11 @@ document.addEventListener("DOMContentLoaded", function(){
             y:{
                 ticks:{color:"#94a3b8"},
                 grid:{color:"rgba(255,255,255,0.05)"}
+            animation:{
+                 duration: 900,
+                easing: 'easeOutQuart'
+                }
+            
             }
         }
     }
@@ -655,7 +660,7 @@ document.addEventListener("DOMContentLoaded", function(){
     chart.data.labels.shift();
     chart.data.datasets.forEach(ds => ds.data.shift());
 }
-            chart.update();
+            chart.update('active');
 
         });
     }
