@@ -701,6 +701,15 @@ document.getElementById("lastUpdate").innerHTML =
     loadData();
     setInterval(loadData,10000);
 
+    function updateClock(){
+    const now = new Date();
+    document.getElementById("aiClock").innerText =
+        now.toLocaleTimeString();
+        
+}
+setInterval(updateClock,1000);
+updateClock();
+
 });
 </script>
 
