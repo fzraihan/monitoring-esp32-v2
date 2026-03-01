@@ -1171,6 +1171,38 @@ async function exportPDF(){
         <button class="btn btn-outline-light btn-sm" onclick="exportPDF()">PDF</button>
     </div>
 
+<div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="card-custom text-center">
+            <h6>Total Data</h6>
+            <h3 id="totalData">0</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-custom text-center">
+            <h6>Suhu Maks</h6>
+            <h3 id="maxTemp">-</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-custom text-center">
+            <h6>Suhu Min</h6>
+            <h3 id="minTemp">-</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card-custom text-center">
+            <h6>Overheat Count</h6>
+            <h3 id="overheatCount">0</h3>
+        </div>
+    </div>
+
+</div>
+    
 </div>
 <script>
 const searchInput = document.getElementById("searchInput");
