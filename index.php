@@ -663,7 +663,7 @@ document.addEventListener("DOMContentLoaded", function(){
             chart.update('active');
             
 
-const last = data[data.length-1];
+if(!data || data.length === 0){     console.log("Data kosong");     return; }  const last = data[data.length-1];
 
 let status = "NORMAL";
 let color = "#22c55e";
