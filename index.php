@@ -661,7 +661,46 @@ document.addEventListener("DOMContentLoaded", function(){
     chart.data.datasets.forEach(ds => ds.data.shift());
 }
             chart.update('active');
+            
+            const card = document.querySelector(".chart-card");
 
+card.style.boxShadow = "0 0 40px rgba(56,189,248,0.6)";
+
+setTimeout(()=>{
+    card.style.boxShadow = "0 0 30px rgba(56,189,248,0.15)";
+},500);
+
+const last = data[data.length-1];
+
+let status = "NORMAL";
+let color = "#22c55e";
+
+if(last.suhu_udara > 32){
+    status = "OVERHEAT";
+    color = "#ef4444";
+}
+
+document.getElementById("lastUpdate").innerHTML =
+    `<span style="color:${color}">
+        AI Status: ${status} | ${new Date().toLocaleTimeString()}
+     </span>`;
+
+function animateNumber(element, newValue){
+    let start = 0;
+    let duration = 800;
+    let startTime = null;
+
+    function step(timestamp){
+        if(!startTime) startTime = timestamp;
+        let progress = Math.min((timestamp - startTime)/duration,1);
+        element.innerText = (progress * newValue).toFixed(1);
+        if(progress < 1){
+            requestAnimationFrame(step);
+        }
+    }
+    requestAnimationFrame(step);
+}
+            
         });
     }
 
