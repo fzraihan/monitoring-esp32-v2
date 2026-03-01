@@ -662,13 +662,6 @@ document.addEventListener("DOMContentLoaded", function(){
 }
             chart.update('active');
             
-            const card = document.querySelector(".chart-card");
-
-card.style.boxShadow = "0 0 40px rgba(56,189,248,0.6)";
-
-setTimeout(()=>{
-    card.style.boxShadow = "0 0 30px rgba(56,189,248,0.15)";
-},500);
 
 const last = data[data.length-1];
 
