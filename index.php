@@ -813,6 +813,15 @@ $stat = [
 
 <h3 class="mb-4">Analisis Statistik Lingkungan</h3>
 
+ <!-- AI Environmental Index -->
+   <div class="card-custom mb-4">
+       <h5 class="mb-3">AI Environmental Index</h5>
+       <div class="progress mb-3" style="height:20px;">
+           <div id="indexBar" style="width:0%"></div>
+       </div>
+       <div id="indexLabel"></div>
+   </div>
+    
 <!-- FILTER -->
 <div class="card-custom mb-4">
     <form method="GET">
@@ -958,7 +967,48 @@ function runAI(){
 document.addEventListener("DOMContentLoaded", function(){
     runAI();
 });
+document.addEventListener("DOMContentLoaded", function(){
 
+    if(!window.location.href.includes("page=analisis")){
+        return;
+    }
+
+    const bar = document.getElementById("indexBar");
+    const label = document.getElementById("indexLabel");
+
+    if(!bar || !label) return;
+
+    let avgTemp = parseFloat("<?= round($stat['rata_suhu'],2) ?>");
+
+    let score = 100 - Math.abs(avgTemp - 28) * 5;
+    if(score < 0) score = 0;
+    if(score > 100) score = 100;
+
+    bar.style.transition = "width 1.5s ease";
+    bar.style.width = score + "%";
+    bar.innerText = Math.round(score) + "%";
+
+    let status = "OPTIMAL";
+    let color = "#22c55e";
+
+    if(score < 60){
+        status = "WARNING";
+        color = "#facc15";
+    }
+
+    if(score < 40){
+        status = "CRITICAL";
+        color = "#ef4444";
+    }
+
+    bar.style.backgroundColor = color;
+
+    label.innerHTML =
+        `<strong>Status:</strong>
+         <span style="color:${color}; font-weight:600;">
+            ${status}
+         </span>`;
+});
 </script>
 
 <!-- =================AI SUMMARY VISUAL================= -->
@@ -1445,46 +1495,7 @@ document.addEventListener("DOMContentLoaded", function(){
     renderGauge("#gaugeTanah", tanah, "%", "#facc15");
     renderGauge("#gaugeAngin", angin, "m/s", "#ef4444");
 
-document.addEventListener("DOMContentLoaded", function(){
 
-    const bar = document.getElementById("indexBar");
-    const label = document.getElementById("indexLabel");
-
-    if(!bar || !label){
-        console.log("Index element tidak ditemukan");
-        return;
-    }
-
-    let avgTemp = parseFloat("<?= round($stat['rata_suhu'],2) ?>");
-
-    let score = 100 - Math.abs(avgTemp - 28) * 5;
-
-    if(score < 0) score = 0;
-    if(score > 100) score = 100;
-
-    bar.style.transition = "width 1.5s ease";
-    bar.style.width = score + "%";
-    bar.innerText = Math.round(score) + "%";
-
-    let status = "OPTIMAL";
-    let color = "#22c55e";
-
-    if(score < 60){
-        status = "WARNING";
-        color = "#facc15";
-    }
-
-    if(score < 40){
-        status = "CRITICAL";
-        color = "#ef4444";
-    }
-
-    bar.style.backgroundColor = color;
-
-    label.innerHTML = `<strong>Status:</strong> 
-        <span style="color:${color}; font-weight:600;">
-            ${status}
-        </span>`;
 });
 
 
