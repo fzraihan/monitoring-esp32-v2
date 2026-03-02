@@ -814,12 +814,17 @@ $stat = [
 <h3 class="mb-4">Analisis Statistik Lingkungan</h3>
 
  <!-- AI Environmental Index -->
-   <div class="card-custom mb-4">
-       <h5 class="mb-3">AI Environmental Index</h5>
-       <div class="progress mb-3" style="height:20px;">
-           <div id="indexBar" style="width:0%"></div>
-       </div>
-   </div>
+  <div class="card-custom mb-4 ai-card">
+    <h5>AI Environmental Index</h5>
+
+    <div style="background:#1e293b; border-radius:20px; overflow:hidden; height:28px;">
+        <div id="indexBar"
+             style="height:100%; width:0%; background:#22c55e; text-align:center; color:white; font-weight:600; line-height:28px;">
+        </div>
+    </div>
+
+    <div id="indexLabel" style="margin-top:10px;"></div>
+</div>
     
 <!-- FILTER -->
 <div class="card-custom mb-4">
@@ -966,6 +971,8 @@ function runAI(){
 document.addEventListener("DOMContentLoaded", function(){
     runAI();
 });
+   
+    <script>
 document.addEventListener("DOMContentLoaded", function(){
 
     if(!window.location.href.includes("page=analisis")){
