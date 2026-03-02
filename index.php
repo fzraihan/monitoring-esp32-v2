@@ -41,11 +41,14 @@ body{
     background-size: 400% 400%;
     animation: gradientMove 12s ease infinite;
     color:white;
+    overflow-x:hidden;
 }
 html, body{
     margin:0;
     padding:0;
     height:100%;
+    width:100%;
+    overflow-x:hidden;
 }
 
 @keyframes gradientMove{
@@ -53,15 +56,67 @@ html, body{
     50%{background-position:100% 50%;}
     100%{background-position:0% 50%;}
 }
-.sidebar{height:100vh;background:#0b1120;padding:25px;}
-.sidebar a{display:block;padding:10px 0;text-decoration:none;color:#9ca3af;transition:0.3s;}
-.sidebar a:hover{color:#38bdf8;}
-.aktif{color:#38bdf8!important;font-weight:bold;text-shadow:0 0 10px rgba(56,189,248,0.8);}
-.card-custom{background:rgba(255,255,255,0.05);border:none;border-radius:15px;padding:20px;transition:0.4s;}
-.card-custom:hover{transform:translateY(-6px);box-shadow:0 10px 25px rgba(0,0,0,0.4);}
+
+.container-fluid{
+    padding:0;
+    margin:0;
+    overflow-x:hidden;
+}
+
+.row{
+    margin:0;
+}
+
+.sidebar{
+    height:100vh;
+    background: linear-gradient(180deg,#070f1f,#0b1120);
+    padding:30px 20px;
+    border-right:1px solid rgba(56,189,248,0.15);
+    position:fixed;
+    left:0;
+    top:0;
+    width:250px;
+    overflow-y:auto;
+    z-index:1000;
+}
+
+/* Main content dengan margin untuk sidebar */
+.main-content{
+    margin-left:250px;
+    min-height:100vh;
+    padding:30px;
+    width:calc(100% - 250px);
+    overflow-x:hidden;
+}
+
+/* Untuk halaman dengan banyak data (laporan) */
+.main-content.scrollable{
+    height:100vh;
+    overflow-y:auto;
+}
+.card-custom{
+    background:rgba(255,255,255,0.05);
+    border:none;
+    border-radius:15px;
+    padding:20px;
+    transition:0.4s;
+    width:100%;
+    box-sizing:border-box;
+}
+.card-custom:hover{
+    transform:translateY(-6px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
 .big-number{font-size:28px;font-weight:600;}
-.no-data-box{background:rgba(255,255,255,0.08);border-radius:15px;padding:40px;text-align:center;}
-.alert-custom{position:fixed;top:20px;right:20px;background:#ef4444;padding:15px 25px;border-radius:10px;display:none;}
+.no-data-box{
+    background:rgba(255,255,255,0.08);
+    border-radius:15px;
+    padding:40px;
+    text-align:center;
+    width:100%;
+    box-sizing:border-box;
+}
+.alert-custom{position:fixed;top:20px;right:20px;background:#ef4444;padding:15px 25px;border-radius:10px;display:none;z-index:9999;}
 
 .chart-card{
     position:relative;
@@ -70,6 +125,9 @@ html, body{
     box-shadow: 0 0 30px rgba(56,189,248,0.15);
     backdrop-filter: blur(15px);
     overflow:hidden;
+    padding:25px;
+    width:100%;
+    box-sizing:border-box;
 }
 
 .chart-card::before{
@@ -92,7 +150,19 @@ html, body{
     0%{top:-100%;}
     100%{top:100%;}
 }
-    
+
+.chart-wrapper{
+    position:relative;
+    height:400px;
+    width:100%;
+    max-width:100%;
+}
+
+/* Untuk analisis - chart lebih tinggi */
+.chart-wrapper.analisis{
+    height:450px;
+}
+
 #loadingScreen{
     position:fixed;
     inset:0;
@@ -136,36 +206,36 @@ html, body{
 
 .sidebar h5{
     font-family:'Orbitron',sans-serif;
-    font-size:20px;
+    font-size:18px;
     letter-spacing:2px;
     font-weight:700;
     color:#38bdf8;
     text-align:center;
-    margin-bottom:25px;
+    margin-bottom:15px;
     text-shadow:0 0 10px rgba(56,189,248,0.6);
 }
 
 .sidebar hr{
     border-color:rgba(255,255,255,0.08);
-    margin-bottom:25px;
+    margin-bottom:20px;
 }
 
 .sidebar a{
     display:flex;
     align-items:center;
     gap:12px;
-    padding:14px 16px;
+    padding:12px 14px;
     border-radius:12px;
     text-decoration:none;
     font-family:'Inter',sans-serif;
-    font-size:15px;
+    font-size:14px;
     font-weight:500;
     color:#9ca3af;
     transition:all 0.3s ease;
 }
 
 .sidebar a i{
-    font-size:18px;
+    font-size:16px;
     transition:0.3s;
 }
 
@@ -222,15 +292,18 @@ html, body{
     border-collapse: separate;
     border-spacing: 0 10px;
     color: white;
+    width:100%;
+    table-layout:auto;
 }
 
 .table-dark-custom thead th {
     background: rgba(255,255,255,0.08);
     border: none;
-    padding: 14px;
-    font-size: 14px;
+    padding: 14px 10px;
+    font-size: 13px;
     letter-spacing: 1px;
     text-transform: uppercase;
+    white-space:nowrap;
 }
 
 .table-dark-custom tbody tr {
@@ -245,7 +318,7 @@ html, body{
 
 .table-dark-custom td {
     border: none;
-    padding: 14px;
+    padding: 14px 10px;
 }
 
 .table-dark-custom tbody tr td:first-child {
@@ -258,17 +331,33 @@ html, body{
     border-bottom-right-radius: 12px;
 }
 
+/* Table wrapper untuk scroll pada mobile saja */
+.table-responsive{
+    width:100%;
+    overflow-x:visible;
+}
+
+@media (max-width: 992px){
+    .table-responsive{
+        overflow-x:auto;
+    }
+}
+
 .ai-card{
     background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(99,102,241,0.08));
     backdrop-filter: blur(10px);
+    width:100%;
+    box-sizing:border-box;
 }
 
 .ai-box{
     background: rgba(255,255,255,0.05);
-    padding:20px;
+    padding:20px 15px;
     border-radius:14px;
     transition:0.3s ease;
     border:1px solid rgba(255,255,255,0.08);
+    box-sizing:border-box;
+    text-align:center;
 }
 
 .ai-box:hover{
@@ -283,9 +372,10 @@ html, body{
 }
 
 .ai-value{
-    font-size:26px;
+    font-size:24px;
     font-weight:700;
     color:#38bdf8;
+    word-break:break-word;
 }
 
 .ai-sub{
@@ -301,15 +391,18 @@ html, body{
     background:rgba(34,197,94,0.2);
     color:#22c55e;
     transition:0.3s;
+    display:inline-block;
 }
 
 .laporan-card{
     background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(56,189,248,0.08));
     backdrop-filter: blur(10px);
+    width:100%;
+    box-sizing:border-box;
 }
 
 .laporan-table thead th{
-    font-size:13px;
+    font-size:12px;
     letter-spacing:1px;
     text-transform:uppercase;
     opacity:0.7;
@@ -328,19 +421,23 @@ html, body{
 }
 
 .laporan-table td{
-    padding:16px 12px;
+    padding:14px 10px;
+    font-size:13px;
 }
 
 .id-badge{
     background:rgba(255,255,255,0.1);
-    padding:6px 12px;
+    padding:4px 10px;
     border-radius:20px;
     font-weight:600;
+    font-size:12px;
+    white-space:nowrap;
 }
 
 .time-text{
-    font-size:13px;
+    font-size:12px;
     opacity:0.7;
+    white-space:nowrap;
 }
 
 .date-range-box{
@@ -460,17 +557,19 @@ html, body{
 
 .stat-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
     gap:15px;
+    width:100%;
 }
 
 .stat-item{
     background:rgba(255,255,255,0.05);
-    padding:15px;
+    padding:15px 20px;
     border-radius:10px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    box-sizing:border-box;
 }
 
 .stat-label{
@@ -482,6 +581,7 @@ html, body{
     font-size:20px;
     font-weight:700;
     color:#38bdf8;
+    white-space:nowrap;
 }
 
 /* ===== PAGINATION STYLES ===== */
@@ -639,6 +739,107 @@ html{
     scroll-behavior:smooth;
 }
 
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Bootstrap-like Grid System */
+.row{
+    display:flex;
+    flex-wrap:wrap;
+    margin:0 -10px;
+}
+
+.col-12{width:100%;padding:0 10px;box-sizing:border-box;}
+.col-xl-3{width:25%;padding:0 10px;box-sizing:border-box;}
+.col-lg-6{width:50%;padding:0 10px;box-sizing:border-box;}
+.col-md-6{width:50%;padding:0 10px;box-sizing:border-box;}
+.col-sm-12{width:100%;padding:0 10px;box-sizing:border-box;}
+
+.g-3{
+    margin:0 -10px;
+}
+
+.mb-3{margin-bottom:1rem;}
+.mb-4{margin-bottom:1.5rem;}
+.h-100{height:100%;}
+
+@media (max-width: 1400px){
+    .main-content{
+        padding:25px 20px;
+    }
+    
+    .ai-value{
+        font-size:22px;
+    }
+}
+
+@media (max-width: 1200px){
+    .sidebar{
+        width:220px;
+    }
+    
+    .main-content{
+        margin-left:220px;
+        width:calc(100% - 220px);
+    }
+    
+    .chart-wrapper{
+        height:350px;
+    }
+    
+    .col-xl-3{
+        width:50%;
+    }
+}
+
+@media (max-width: 992px){
+    .sidebar{
+        width:200px;
+    }
+    
+    .main-content{
+        margin-left:200px;
+        width:calc(100% - 200px);
+        padding:20px 15px;
+    }
+    
+    .stat-grid{
+        grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .ai-value{
+        font-size:20px;
+    }
+    
+    .col-lg-6{
+        width:100%;
+    }
+}
+
+@media (max-width: 768px){
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+        border-right:none;
+        border-bottom:1px solid rgba(56,189,248,0.15);
+    }
+    
+    .main-content{
+        margin-left:0;
+        width:100%;
+    }
+    
+    .pagination-wrapper{
+        flex-direction:column;
+        align-items:center;
+        gap:15px;
+    }
+    
+    .col-md-6{
+        width:100%;
+    }
+}
+
 </style>
 </head>
 
@@ -660,11 +861,8 @@ html{
 <div id="tsparticles"></div>
 <div class="ai-grid"></div>
 
-<div class="container-fluid">
-<div class="row">
-
 <!-- SIDEBAR -->
-<div class="col-md-2 sidebar">
+<div class="sidebar">
 <h5>DASHBOARD AGROKLIMAT</h5>
 <small style="display:block;text-align:center;opacity:0.5;margin-top:-15px;">
 Smart Monitoring System
@@ -681,12 +879,10 @@ Smart Monitoring System
 <a href="index.php?page=laporan" class="<?= $page=='laporan'?'aktif':'' ?>">
     <i class="bi bi-file-earmark-text me-2"></i> Laporan
 </a>
-
 </div>
 
-<!-- MAIN -->
+<!-- MAIN CONTENT -->
 <div class="main-content <?= $page=='laporan' ? 'scrollable' : '' ?>">
-<div class="col-12">
 
 <?php
 /* ======================================================
@@ -711,30 +907,30 @@ $latest = $data[0];
 
 <h3 class="mb-4">Dashboard Pemantauan Agroklimat</h3>
 
-<div class="row mb-4">
+<div class="row mb-4 g-3">
 
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
         <div class="card-custom text-center h-100">
             <h6>🌡 Suhu Udara</h6>
             <div id="gaugeSuhu"></div>
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
         <div class="card-custom text-center h-100">
             <h6>💧 Kelembaban Udara</h6>
             <div id="gaugeKelembaban"></div>
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
         <div class="card-custom text-center h-100">
             <h6>🌱 Kadar Air Tanah</h6>
             <div id="gaugeTanah"></div>
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-6 mb-3">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
         <div class="card-custom text-center h-100">
             <h6>🌬 Kecepatan Angin</h6>
             <div id="gaugeAngin"></div>
@@ -748,7 +944,7 @@ $latest = $data[0];
     <div class="col-12">
         <div class="card-custom mb-4 chart-card">
             <div class="ai-clock" id="aiClock"></div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
                 <div>
                     <h5 class="mb-1">📊 Grafik Parameter Real-Time</h5>
                     <small id="lastUpdate" style="opacity:0.6;"></small>
@@ -1232,9 +1428,7 @@ if(empty($result)):
 <?php endif; ?>
 
 </div>
-</div>
-</div>
-</div>
+<!-- End Main Content -->
 
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
