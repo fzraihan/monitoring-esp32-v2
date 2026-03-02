@@ -508,9 +508,6 @@ window.addEventListener("load", function(){
 <div class="row">
 
 <!-- SIDEBAR -->
-<div style="text-align:center;margin-bottom:15px;">
-    <img src="logo.png" width="60" style="filter:drop-shadow(0 0 8px #38bdf8);">
-</div>
 <div class="col-md-2 sidebar">
 <h5>DASHBOARD AGROKLIMAT</h5>
 <small style="display:block;text-align:center;opacity:0.5;margin-top:-15px;">
