@@ -118,14 +118,20 @@ html, body{
     top:0;
     width:16.666667%; /* 2/12 kolom bootstrap */
     overflow-y:auto;
+    z-index:1000;
 }
 
 /* Main content dengan margin untuk sidebar */
 .main-content{
     margin-left:16.666667%;
+    min-height:100vh;
+    padding:25px;
+}
+
+/* Untuk halaman dengan banyak data (laporan) */
+.main-content.scrollable{
     height:100vh;
     overflow-y:auto;
-    padding:25px;
 }
 
 .sidebar h5{
@@ -534,11 +540,21 @@ html, body{
     color:#0f172a;
     font-weight:700;
     box-shadow:0 0 20px rgba(56,189,248,0.4);
+    cursor:default;
+    pointer-events:none;
+}
+
+.page-btn.disabled{
+    opacity:0.3;
+    cursor:not-allowed;
+    pointer-events:none;
 }
 
 .page-dots{
     color:rgba(255,255,255,0.5);
     padding:0 8px;
+    display:flex;
+    align-items:center;
 }
 
 .quick-jump{
@@ -669,7 +685,7 @@ Smart Monitoring System
 </div>
 
 <!-- MAIN -->
-<div class="main-content">
+<div class="main-content <?= $page=='laporan' ? 'scrollable' : '' ?>">
 <div class="col-12">
 
 <?php
@@ -1123,53 +1139,77 @@ if(empty($result)):
                 <!-- Tombol Previous -->
                 <?php if($currentPage > 1): ?>
                 <li>
-                    <a href="?page=laporan&halaman=<?= $currentPage - 1 ?>" class="page-btn">
+                    <a href="?page=laporan&halaman=<?= $currentPage - 1 ?>" class="page-btn" title="Halaman Sebelumnya">
                         <i class="bi bi-chevron-left"></i>
                     </a>
                 </li>
-                <?php endif; ?>
-
-                <!-- Tombol halaman pertama -->
-                <?php if($currentPage > 3): ?>
+                <?php else: ?>
                 <li>
-                    <a href="?page=laporan&halaman=1" class="page-btn">1</a>
+                    <span class="page-btn disabled" style="opacity:0.3;cursor:not-allowed;">
+                        <i class="bi bi-chevron-left"></i>
+                    </span>
                 </li>
-                <?php if($currentPage > 4): ?>
-                <li><span class="page-dots">...</span></li>
-                <?php endif; ?>
                 <?php endif; ?>
 
-                <!-- Tombol halaman sekitar current -->
                 <?php
-                $start = max(1, $currentPage - 2);
-                $end = min($totalPages, $currentPage + 2);
+                // Logika pagination yang lebih baik
+                $range = 2; // Jumlah halaman di kiri dan kanan current page
+                $showFirst = true;
+                $showLast = true;
                 
-                for($i = $start; $i <= $end; $i++):
+                // Tentukan range halaman yang akan ditampilkan
+                $startPage = max(1, $currentPage - $range);
+                $endPage = min($totalPages, $currentPage + $range);
+                
+                // Tampilkan halaman pertama jika tidak dalam range
+                if($startPage > 1){
+                    ?>
+                    <li>
+                        <a href="?page=laporan&halaman=1" class="page-btn">1</a>
+                    </li>
+                    <?php if($startPage > 2): ?>
+                    <li><span class="page-dots">...</span></li>
+                    <?php endif; ?>
+                    <?php
+                }
+                
+                // Tampilkan range halaman
+                for($i = $startPage; $i <= $endPage; $i++):
                 ?>
                 <li>
                     <a href="?page=laporan&halaman=<?= $i ?>" 
-                       class="page-btn <?= $i == $currentPage ? 'active' : '' ?>">
+                       class="page-btn <?= $i == $currentPage ? 'active' : '' ?>"
+                       title="Halaman <?= $i ?>">
                         <?= $i ?>
                     </a>
                 </li>
                 <?php endfor; ?>
 
-                <!-- Tombol halaman terakhir -->
-                <?php if($currentPage < $totalPages - 2): ?>
-                <?php if($currentPage < $totalPages - 3): ?>
-                <li><span class="page-dots">...</span></li>
-                <?php endif; ?>
-                <li>
-                    <a href="?page=laporan&halaman=<?= $totalPages ?>" class="page-btn"><?= $totalPages ?></a>
-                </li>
-                <?php endif; ?>
+                <?php
+                // Tampilkan halaman terakhir jika tidak dalam range
+                if($endPage < $totalPages){
+                    if($endPage < $totalPages - 1): ?>
+                    <li><span class="page-dots">...</span></li>
+                    <?php endif; ?>
+                    <li>
+                        <a href="?page=laporan&halaman=<?= $totalPages ?>" class="page-btn"><?= $totalPages ?></a>
+                    </li>
+                    <?php
+                }
+                ?>
 
                 <!-- Tombol Next -->
                 <?php if($currentPage < $totalPages): ?>
                 <li>
-                    <a href="?page=laporan&halaman=<?= $currentPage + 1 ?>" class="page-btn">
+                    <a href="?page=laporan&halaman=<?= $currentPage + 1 ?>" class="page-btn" title="Halaman Selanjutnya">
                         <i class="bi bi-chevron-right"></i>
                     </a>
+                </li>
+                <?php else: ?>
+                <li>
+                    <span class="page-btn disabled" style="opacity:0.3;cursor:not-allowed;">
+                        <i class="bi bi-chevron-right"></i>
+                    </span>
                 </li>
                 <?php endif; ?>
 
@@ -1181,7 +1221,7 @@ if(empty($result)):
             <label>Ke halaman:</label>
             <input type="number" id="jumpPage" min="1" max="<?= $totalPages ?>" 
                    placeholder="<?= $currentPage ?>" class="jump-input">
-            <button onclick="jumpToPage()" class="btn btn-sm btn-outline-light">Go</button>
+            <button onclick="jumpToPage(<?= $totalPages ?>)" class="btn btn-sm btn-outline-light">Go</button>
         </div>
     </div>
 
@@ -1470,38 +1510,101 @@ document.addEventListener("DOMContentLoaded", function(){
                  </span>`;
         }
 
-        // AI FORECAST
+        // AI FORECAST - Improved Algorithm
         const dataAnalisis = <?= json_encode($dataArr ?? []) ?>;
 
-        if(dataAnalisis && dataAnalisis.length >= 3){
+        if(dataAnalisis && dataAnalisis.length >= 5){
 
-            function linearRegression(y){
-                let n=y.length,sumX=0,sumY=0,sumXY=0,sumXX=0;
-                for(let i=0;i<n;i++){
-                    sumX+=i; sumY+=y[i];
-                    sumXY+=i*y[i]; sumXX+=i*i;
+            // Exponential Smoothing untuk prediksi lebih akurat
+            function exponentialSmoothing(data, alpha = 0.3){
+                if(data.length < 2) return data[data.length - 1];
+                
+                let smoothed = [data[0]];
+                for(let i = 1; i < data.length; i++){
+                    smoothed[i] = alpha * data[i] + (1 - alpha) * smoothed[i - 1];
                 }
-                let slope=(n*sumXY - sumX*sumY)/(n*sumXX - sumX*sumX);
-                let intercept=(sumY - slope*sumX)/n;
-                return {slope,intercept};
+                return smoothed;
             }
 
-            function predict(data){
-                let model=linearRegression(data);
-                return model.intercept + model.slope*(data.length+60);
+            // Linear Regression untuk trend
+            function linearRegression(y){
+                let n = y.length;
+                let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+                
+                for(let i = 0; i < n; i++){
+                    sumX += i;
+                    sumY += y[i];
+                    sumXY += i * y[i];
+                    sumXX += i * i;
+                }
+                
+                let slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                let intercept = (sumY - slope * sumX) / n;
+                
+                return {slope, intercept};
             }
 
-            let suhu=dataAnalisis.map(d=>parseFloat(d.suhu_udara));
-            let kelembaban=dataAnalisis.map(d=>parseFloat(d.kelembaban_udara));
-            let tanah=dataAnalisis.map(d=>parseFloat(d.kadar_air_tanah));
-            let angin=dataAnalisis.map(d=>parseFloat(d.kecepatan_angin));
+            // Hybrid Prediction: Exponential Smoothing + Linear Trend
+            function predict(data, stepsAhead = 6){
+                // Smooth data dulu
+                let smoothedData = exponentialSmoothing(data, 0.3);
+                
+                // Hitung trend
+                let trend = linearRegression(smoothedData);
+                
+                // Prediksi: last smoothed value + trend * steps
+                let lastSmoothed = smoothedData[smoothedData.length - 1];
+                let prediction = lastSmoothed + (trend.slope * stepsAhead);
+                
+                // Batas realistis
+                let avg = data.reduce((a,b) => a+b, 0) / data.length;
+                let stdDev = Math.sqrt(
+                    data.reduce((sq, n) => sq + Math.pow(n - avg, 2), 0) / data.length
+                );
+                
+                // Prediksi tidak boleh terlalu jauh dari range normal
+                let min = Math.min(...data) - stdDev;
+                let max = Math.max(...data) + stdDev;
+                
+                prediction = Math.max(min, Math.min(max, prediction));
+                
+                return prediction;
+            }
 
-            document.getElementById("predSuhu").innerText = predict(suhu).toFixed(2)+" °C";
-            document.getElementById("predKelembaban").innerText = predict(kelembaban).toFixed(2)+" %";
-            document.getElementById("predTanah").innerText = predict(tanah).toFixed(2)+" %";
-            document.getElementById("predAngin").innerText = predict(angin).toFixed(2)+" m/s";
+            // Ambil data untuk prediksi
+            let suhu = dataAnalisis.map(d => parseFloat(d.suhu_udara));
+            let kelembaban = dataAnalisis.map(d => parseFloat(d.kelembaban_udara));
+            let tanah = dataAnalisis.map(d => parseFloat(d.kadar_air_tanah));
+            let angin = dataAnalisis.map(d => parseFloat(d.kecepatan_angin));
 
-            document.getElementById("anomalyStatus").innerText = "Status: Normal";
+            // Tampilkan prediksi
+            document.getElementById("predSuhu").innerText = predict(suhu, 6).toFixed(2) + " °C";
+            document.getElementById("predKelembaban").innerText = predict(kelembaban, 6).toFixed(2) + " %";
+            document.getElementById("predTanah").innerText = predict(tanah, 6).toFixed(2) + " %";
+            document.getElementById("predAngin").innerText = predict(angin, 6).toFixed(2) + " m/s";
+
+            // Deteksi anomali
+            let currentSuhu = suhu[suhu.length - 1];
+            let avgSuhu = suhu.reduce((a, b) => a + b, 0) / suhu.length;
+            let stdDevSuhu = Math.sqrt(
+                suhu.reduce((sq, n) => sq + Math.pow(n - avgSuhu, 2), 0) / suhu.length
+            );
+
+            let anomalyStatus = "Normal";
+            let statusColor = "#22c55e";
+            
+            if(Math.abs(currentSuhu - avgSuhu) > 2 * stdDevSuhu){
+                anomalyStatus = "Anomali Terdeteksi!";
+                statusColor = "#ef4444";
+            } else if(Math.abs(currentSuhu - avgSuhu) > stdDevSuhu){
+                anomalyStatus = "Perlu Perhatian";
+                statusColor = "#facc15";
+            }
+
+            let anomalyBadge = document.getElementById("anomalyStatus");
+            anomalyBadge.innerText = "Status: " + anomalyStatus;
+            anomalyBadge.style.backgroundColor = statusColor.replace(')', ', 0.2)').replace('rgb', 'rgba').replace('#22c55e', 'rgba(34,197,94,0.2)').replace('#ef4444', 'rgba(239,68,68,0.2)').replace('#facc15', 'rgba(250,204,21,0.2)');
+            anomalyBadge.style.color = statusColor;
         }
     }
 
@@ -1547,7 +1650,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 });
 
-// FILTER FUNCTIONS
+// FILTER FUNCTIONS - Compatible with Pagination
 function getRowDate(row){
     let raw = row.cells[5].innerText;
     return new Date(raw);
@@ -1557,25 +1660,35 @@ function applyDateFilter(){
     let from = document.getElementById("dateFrom").value;
     let to = document.getElementById("dateTo").value;
 
-    if(!from || !to) return;
+    if(!from || !to){
+        alert("Pilih kedua tanggal terlebih dahulu!");
+        return;
+    }
 
     let fromDate = new Date(from);
     let toDate = new Date(to);
     toDate.setHours(23,59,59,999);
 
     let rows = document.querySelectorAll(".laporan-table tbody tr");
+    let visibleCount = 0;
 
     rows.forEach(row => {
         let rowDate = getRowDate(row);
 
         if(rowDate >= fromDate && rowDate <= toDate){
             row.style.display = "";
+            visibleCount++;
         } else {
             row.style.display = "none";
         }
     });
 
     activateGlow();
+    
+    // Update info jika diperlukan
+    if(visibleCount === 0){
+        alert("Tidak ada data dalam rentang tanggal tersebut pada halaman ini.");
+    }
 }
 
 function filterToday(){
@@ -1583,13 +1696,23 @@ function filterToday(){
     today.setHours(0,0,0,0);
 
     let rows = document.querySelectorAll(".laporan-table tbody tr");
+    let visibleCount = 0;
 
     rows.forEach(row => {
         let rowDate = getRowDate(row);
-        row.style.display = rowDate >= today ? "" : "none";
+        if(rowDate >= today){
+            row.style.display = "";
+            visibleCount++;
+        } else {
+            row.style.display = "none";
+        }
     });
 
     activateGlow();
+    
+    if(visibleCount === 0){
+        alert("Tidak ada data hari ini pada halaman ini. Coba navigasi ke halaman lain.");
+    }
 }
 
 function filter7Days(){
@@ -1598,13 +1721,23 @@ function filter7Days(){
     past.setDate(today.getDate() - 7);
 
     let rows = document.querySelectorAll(".laporan-table tbody tr");
+    let visibleCount = 0;
 
     rows.forEach(row => {
         let rowDate = getRowDate(row);
-        row.style.display = rowDate >= past ? "" : "none";
+        if(rowDate >= past){
+            row.style.display = "";
+            visibleCount++;
+        } else {
+            row.style.display = "none";
+        }
     });
 
     activateGlow();
+    
+    if(visibleCount === 0){
+        alert("Tidak ada data 7 hari terakhir pada halaman ini. Coba navigasi ke halaman lain.");
+    }
 }
 
 function resetFilter(){
@@ -1661,13 +1794,21 @@ function exportPDF(){
 }
 
 // JUMP TO PAGE
-function jumpToPage(){
+function jumpToPage(maxPage){
     const input = document.getElementById("jumpPage");
     const page = parseInt(input.value);
     
-    if(page && page > 0){
-        window.location.href = "?page=laporan&halaman=" + page;
+    if(!page || page < 1){
+        alert("Masukkan nomor halaman yang valid!");
+        return;
     }
+    
+    if(page > maxPage){
+        alert("Halaman tidak tersedia! Maksimal halaman: " + maxPage);
+        return;
+    }
+    
+    window.location.href = "?page=laporan&halaman=" + page;
 }
 
 // Enter key untuk jump
@@ -1676,7 +1817,8 @@ document.addEventListener("DOMContentLoaded", function(){
     if(jumpInput){
         jumpInput.addEventListener("keypress", function(e){
             if(e.key === "Enter"){
-                jumpToPage();
+                const maxPage = parseInt(jumpInput.getAttribute("max"));
+                jumpToPage(maxPage);
             }
         });
     }
