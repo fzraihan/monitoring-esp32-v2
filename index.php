@@ -984,8 +984,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
     if(!bar || !label) return;
 
-    let avgTemp = parseFloat("<?= round($stat['rata_suhu'],2) ?>");
-
+   let avgTemp = parseFloat("<?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>");
+    if(isNaN(avgTemp)) avgTemp = 0;
+    
     let score = 100 - Math.abs(avgTemp - 28) * 5;
     if(score < 0) score = 0;
     if(score > 100) score = 100;
