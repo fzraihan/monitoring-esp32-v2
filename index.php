@@ -37,31 +37,7 @@ body{
     color:white;
 }
 html, body{
-    height:100vh;
-    margin:0;
-    padding:0;
-    overflow:hidden;   /* body tidak scroll */
-}
-    .dashboard-wrapper{
-    display:flex;
-    height:100vh;
-    width:100%;
-}
-
-.sidebar{
-    width:250px;
-    height:100vh;
-    position:fixed;
-    left:0;
-    top:0;
-}
-
-.main-content{
-    margin-left:250px;
-    height:100vh;
-    overflow-y:auto;
-    overflow-x:hidden;
-    padding:25px;
+    height:100%;
 }
 
 @keyframes gradientMove{
