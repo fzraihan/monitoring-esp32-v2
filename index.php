@@ -786,39 +786,6 @@ document.getElementById("lastUpdate").innerHTML =
 setInterval(updateClock,1000);
 updateClock();
 
-function calculateIndex(){
-
-    let avgTemp = <?= round($stat['rata_suhu'],2) ?>;
-    let score = 100 - Math.abs(avgTemp - 28) * 5;
-
-    if(score < 0) score = 0;
-    if(score > 100) score = 100;
-
-    document.getElementById("indexBar").style.width = score+"%";
-    document.getElementById("indexBar").innerText = Math.round(score)+"%";
-
-    let status = "OPTIMAL";
-    let color = "bg-success";
-
-    if(score < 60){
-        status = "WARNING";
-        color = "bg-warning";
-    }
-
-    if(score < 40){
-        status = "CRITICAL";
-        color = "bg-danger";
-    }
-
-    document.getElementById("indexBar").className = "progress-bar "+color;
-    document.getElementById("indexLabel").innerHTML =
-        "<strong>Status:</strong> "+status;
-}
-
-document.addEventListener("DOMContentLoaded", calculateIndex);
-
-    
-});
 </script>
 
 <?php endif; ?>
@@ -998,34 +965,8 @@ function linearRegression(y){
     let intercept = (sumY - slope*sumX)/n;
 
     return {slope,intercept};
-}
-
-function runAI(){
-
-    if(!dataAnalisis || dataAnalisis.length < 3){
-        console.log("Data kurang");
-        return;
     }
 
-    let suhu = dataAnalisis.map(d=>parseFloat(d.suhu_udara));
-    let kelembaban = dataAnalisis.map(d=>parseFloat(d.kelembaban_udara));
-    let tanah = dataAnalisis.map(d=>parseFloat(d.kadar_air_tanah));
-    let angin = dataAnalisis.map(d=>parseFloat(d.kecepatan_angin));
-
-    function predict(data){
-        let model = linearRegression(data);
-        return model.intercept + model.slope*(data.length+60);
-    }
-
-    document.getElementById("predSuhu").innerText = predict(suhu).toFixed(2)+" °C";
-    document.getElementById("predKelembaban").innerText = predict(kelembaban).toFixed(2)+" %";
-    document.getElementById("predTanah").innerText = predict(tanah).toFixed(2)+" %";
-    document.getElementById("predAngin").innerText = predict(angin).toFixed(2)+" m/s";
-}
-
-document.addEventListener("DOMContentLoaded", function(){
-
-runAI();
 });
 </script>
     
@@ -1579,33 +1520,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 });
 
-    document.addEventListener("DOMContentLoaded", function(){
-
-    if(!window.location.href.includes("page=laporan")) return;
-
-    const rows = document.querySelectorAll(".laporan-table tbody tr");
-    if(rows.length === 0) return;
-
-    let temps = [];
-    let overheat = 0;
-
-    rows.forEach(row=>{
-        let temp = parseFloat(row.cells[1].innerText);
-        temps.push(temp);
-
-        if(temp > 32){
-            overheat++;
-            row.style.backgroundColor = "rgba(239,68,68,0.15)";
-        }
-    });
-
-    document.getElementById("totalData").innerText = temps.length;
-    document.getElementById("maxTemp").innerText = Math.max(...temps)+" °C";
-    document.getElementById("minTemp").innerText = Math.min(...temps)+" °C";
-    document.getElementById("overheatCount").innerText = overheat;
-
-});
-
     const bar = document.getElementById("indexBar");
     const label = document.getElementById("indexLabel");
 
@@ -1730,6 +1644,149 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
 });
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const page = new URLSearchParams(window.location.search).get("page") || "beranda";
+
+    /* =========================================================
+       BERANDA
+    ========================================================== */
+    if(page === "beranda"){
+
+        // ===== GAUGE =====
+        if(typeof ApexCharts !== "undefined" && document.querySelector("#gaugeSuhu")){
+
+            const suhu = <?= $latest['suhu_udara'] ?? 0 ?>;
+            const kelembaban = <?= $latest['kelembaban_udara'] ?? 0 ?>;
+            const tanah = <?= $latest['kadar_air_tanah'] ?? 0 ?>;
+            const angin = <?= $latest['kecepatan_angin'] ?? 0 ?>;
+
+            function renderGauge(id,value,unit,color){
+                new ApexCharts(document.querySelector(id),{
+                    series:[value],
+                    chart:{height:230,type:'radialBar'},
+                    plotOptions:{
+                        radialBar:{
+                            hollow:{size:'70%'},
+                            dataLabels:{
+                                name:{show:false},
+                                value:{
+                                    fontSize:'22px',
+                                    formatter:(val)=>val+" "+unit
+                                }
+                            }
+                        }
+                    },
+                    colors:[color]
+                }).render();
+            }
+
+            renderGauge("#gaugeSuhu",suhu,"°C","#22c55e");
+            renderGauge("#gaugeKelembaban",kelembaban,"%","#3b82f6");
+            renderGauge("#gaugeTanah",tanah,"%","#facc15");
+            renderGauge("#gaugeAngin",angin,"m/s","#ef4444");
+        }
+    }
+
+    /* =========================================================
+       ANALISIS
+    ========================================================== */
+    if(page === "analisis"){
+
+        const bar = document.getElementById("indexBar");
+        const label = document.getElementById("indexLabel");
+
+        if(bar && label){
+
+            let avgTemp = <?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>;
+
+            let score = 100 - Math.abs(avgTemp - 28) * 5;
+            score = Math.max(0, Math.min(100, score));
+
+            bar.style.width = score+"%";
+            bar.innerText = Math.round(score)+"%";
+
+            let status="OPTIMAL";
+            let color="#22c55e";
+
+            if(score<60){ status="WARNING"; color="#facc15"; }
+            if(score<40){ status="CRITICAL"; color="#ef4444"; }
+
+            bar.style.backgroundColor=color;
+
+            label.innerHTML =
+                `<strong>Status:</strong>
+                 <span style="color:${color}; font-weight:600;">
+                    ${status}
+                 </span>`;
+        }
+
+        // ===== AI FORECAST =====
+        const dataAnalisis = <?= json_encode($dataArr ?? []) ?>;
+
+        if(dataAnalisis && dataAnalisis.length >= 3){
+
+            function linearRegression(y){
+                let n=y.length,sumX=0,sumY=0,sumXY=0,sumXX=0;
+                for(let i=0;i<n;i++){
+                    sumX+=i; sumY+=y[i];
+                    sumXY+=i*y[i]; sumXX+=i*i;
+                }
+                let slope=(n*sumXY - sumX*sumY)/(n*sumXX - sumX*sumX);
+                let intercept=(sumY - slope*sumX)/n;
+                return {slope,intercept};
+            }
+
+            function predict(data){
+                let model=linearRegression(data);
+                return model.intercept + model.slope*(data.length+60);
+            }
+
+            let suhu=dataAnalisis.map(d=>parseFloat(d.suhu_udara));
+            let kelembaban=dataAnalisis.map(d=>parseFloat(d.kelembaban_udara));
+            let tanah=dataAnalisis.map(d=>parseFloat(d.kadar_air_tanah));
+            let angin=dataAnalisis.map(d=>parseFloat(d.kecepatan_angin));
+
+            document.getElementById("predSuhu").innerText = predict(suhu).toFixed(2)+" °C";
+            document.getElementById("predKelembaban").innerText = predict(kelembaban).toFixed(2)+" %";
+            document.getElementById("predTanah").innerText = predict(tanah).toFixed(2)+" %";
+            document.getElementById("predAngin").innerText = predict(angin).toFixed(2)+" m/s";
+        }
+    }
+
+    /* =========================================================
+       LAPORAN
+    ========================================================== */
+    if(page === "laporan"){
+
+        const rows = document.querySelectorAll(".laporan-table tbody tr");
+        if(rows.length === 0) return;
+
+        let temps = [];
+        let overheat = 0;
+
+        rows.forEach(row=>{
+            let temp = parseFloat(row.cells[1].innerText);
+            temps.push(temp);
+
+            if(temp > 32){
+                overheat++;
+                row.style.backgroundColor="rgba(239,68,68,0.15)";
+            }
+        });
+
+        document.getElementById("totalData").innerText = temps.length;
+        document.getElementById("maxTemp").innerText = Math.max(...temps)+" °C";
+        document.getElementById("minTemp").innerText = Math.min(...temps)+" °C";
+        document.getElementById("overheatCount").innerText = overheat;
+    }
+
+});
+</script>
+
+        
         
 </script>
     
