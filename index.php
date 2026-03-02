@@ -975,11 +975,6 @@ runAI();
 </script>
     
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    if(!window.location.href.includes("page=analisis")){
-        return;
-    }
 
     const bar = document.getElementById("indexBar");
     const label = document.getElementById("indexLabel");
@@ -1556,10 +1551,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 });
 
-    document.addEventListener("DOMContentLoaded", function(){
-
-    if(!window.location.href.includes("page=analisis")) return;
-
     const bar = document.getElementById("indexBar");
     const label = document.getElementById("indexLabel");
 
@@ -1607,6 +1598,85 @@ document.addEventListener("DOMContentLoaded", function(){
 <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
     <div id="tsparticles"></div>
 
+
+    <script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const page = new URLSearchParams(window.location.search).get("page");
+
+    /* ================= ANALISIS PAGE ================= */
+    if(page === "analisis"){
+
+        const dataAnalisis = <?= json_encode($dataArr ?? []) ?>;
+
+        if(dataAnalisis && dataAnalisis.length >= 3){
+
+            function linearRegression(y){
+                let n = y.length;
+                let sumX=0,sumY=0,sumXY=0,sumXX=0;
+
+                for(let i=0;i<n;i++){
+                    sumX+=i;
+                    sumY+=y[i];
+                    sumXY+=i*y[i];
+                    sumXX+=i*i;
+                }
+
+                let slope=(n*sumXY - sumX*sumY)/(n*sumXX - sumX*sumX);
+                let intercept=(sumY - slope*sumX)/n;
+
+                return {slope,intercept};
+            }
+
+            function predict(data){
+                let model = linearRegression(data);
+                return model.intercept + model.slope*(data.length+60);
+            }
+
+            let suhu = dataAnalisis.map(d=>parseFloat(d.suhu_udara));
+            let kelembaban = dataAnalisis.map(d=>parseFloat(d.kelembaban_udara));
+            let tanah = dataAnalisis.map(d=>parseFloat(d.kadar_air_tanah));
+            let angin = dataAnalisis.map(d=>parseFloat(d.kecepatan_angin));
+
+            document.getElementById("predSuhu").innerText = predict(suhu).toFixed(2)+" °C";
+            document.getElementById("predKelembaban").innerText = predict(kelembaban).toFixed(2)+" %";
+            document.getElementById("predTanah").innerText = predict(tanah).toFixed(2)+" %";
+            document.getElementById("predAngin").innerText = predict(angin).toFixed(2)+" m/s";
+        }
+
+        // ===== INDEX =====
+        const bar = document.getElementById("indexBar");
+        const label = document.getElementById("indexLabel");
+
+        if(bar && label){
+
+            let avgTemp = <?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>;
+
+            let score = 100 - Math.abs(avgTemp - 28) * 5;
+            score = Math.max(0, Math.min(100, score));
+
+            bar.style.width = score+"%";
+            bar.innerText = Math.round(score)+"%";
+
+            let status="OPTIMAL";
+            let color="#22c55e";
+
+            if(score<60){ status="WARNING"; color="#facc15"; }
+            if(score<40){ status="CRITICAL"; color="#ef4444"; }
+
+            bar.style.backgroundColor=color;
+
+            label.innerHTML=
+                `<strong>Status:</strong>
+                 <span style="color:${color}; font-weight:600;">
+                    ${status}
+                 </span>`;
+        }
+    }
+
+});
+        
+</script>
     
 </body>
 </html>
