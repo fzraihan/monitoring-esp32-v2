@@ -969,10 +969,12 @@ function runAI(){
 }
 
 document.addEventListener("DOMContentLoaded", function(){
-    runAI();
+
+runAI();
 });
-   
-    <script>
+</script>
+    
+<script>
 document.addEventListener("DOMContentLoaded", function(){
 
     if(!window.location.href.includes("page=analisis")){
