@@ -26,6 +26,7 @@ function getSupabaseData($url,$key){
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -107,19 +108,70 @@ html, body{
     transition:opacity 0.6s ease, visibility 0.6s ease;
 }
 
-/* ===== SIDEBAR ICON STYLE ===== */
-.sidebar i{
+/* ================= SIDEBAR UPGRADE ================= */
+
+.sidebar{
+    height:100vh;
+    background: linear-gradient(180deg,#070f1f,#0b1120);
+    padding:30px 20px;
+    border-right:1px solid rgba(56,189,248,0.15);
+    position:relative;
+}
+
+.sidebar h5{
+    font-family:'Orbitron',sans-serif;
+    font-size:20px;
+    letter-spacing:2px;
+    font-weight:700;
+    color:#38bdf8;
+    text-align:center;
+    margin-bottom:25px;
+    text-shadow:0 0 10px rgba(56,189,248,0.6);
+}
+
+.sidebar hr{
+    border-color:rgba(255,255,255,0.08);
+    margin-bottom:25px;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 16px;
+    border-radius:12px;
+    text-decoration:none;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    font-weight:500;
+    color:#9ca3af;
+    transition:all 0.3s ease;
+}
+
+.sidebar a i{
     font-size:18px;
     transition:0.3s;
 }
 
+.sidebar a:hover{
+    background:rgba(56,189,248,0.1);
+    color:#38bdf8;
+    transform:translateX(6px);
+}
+
 .sidebar a:hover i{
-    transform:translateX(4px);
+    transform:scale(1.2);
+}
+
+.aktif{
+    background:rgba(56,189,248,0.15);
+    color:#38bdf8 !important;
+    font-weight:600;
+    box-shadow:0 0 15px rgba(56,189,248,0.25);
 }
 
 .aktif i{
     color:#38bdf8;
-    text-shadow:0 0 8px rgba(56,189,248,0.8);
 }
 
 .loader-content{
@@ -456,8 +508,14 @@ window.addEventListener("load", function(){
 <div class="row">
 
 <!-- SIDEBAR -->
+<div style="text-align:center;margin-bottom:15px;">
+    <img src="logo.png" width="60" style="filter:drop-shadow(0 0 8px #38bdf8);">
+</div>
 <div class="col-md-2 sidebar">
-<h5>SISTEM AGROKLIMAT</h5>
+<h5>DASHBOARD AGROKLIMAT</h5>
+<small style="display:block;text-align:center;opacity:0.5;margin-top:-15px;">
+Smart Monitoring System
+</small>
 <hr>
 <a href="index.php?page=beranda" class="<?= $page=='beranda'?'aktif':'' ?>">
     <i class="bi bi-speedometer2 me-2"></i> Beranda
