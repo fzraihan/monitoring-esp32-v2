@@ -28,6 +28,11 @@ function getSupabaseData($url,$key){
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 body{
@@ -58,9 +63,6 @@ html, body{
 .no-data-box{background:rgba(255,255,255,0.08);border-radius:15px;padding:40px;text-align:center;}
 .alert-custom{position:fixed;top:20px;right:20px;background:#ef4444;padding:15px 25px;border-radius:10px;display:none;}
 
-
-/* ===== FUTURISTIC AI STYLE ===== */
-
 .chart-card{
     position:relative;
     background: linear-gradient(145deg, rgba(15,23,42,0.7), rgba(30,58,138,0.4));
@@ -70,7 +72,6 @@ html, body{
     overflow:hidden;
 }
 
-/* Animated scanning line */
 .chart-card::before{
     content:"";
     position:absolute;
@@ -92,10 +93,9 @@ html, body{
     100%{top:100%;}
 }
     
-/* ================= LOADING SCREEN PERFECT CENTER ================= */
 #loadingScreen{
     position:fixed;
-    inset:0; /* top:0; left:0; right:0; bottom:0 */
+    inset:0;
     width:100%;
     height:100vh;
     display:flex;
@@ -107,8 +107,6 @@ html, body{
     z-index:99999;
     transition:opacity 0.6s ease, visibility 0.6s ease;
 }
-
-/* ================= SIDEBAR UPGRADE ================= */
 
 .sidebar{
     height:100vh;
@@ -202,7 +200,6 @@ html, body{
     visibility:hidden;
 }
 
-/* ===== TABEL DARK MENYATU ===== */
 .table-dark-custom {
     border-collapse: separate;
     border-spacing: 0 10px;
@@ -242,8 +239,6 @@ html, body{
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
 }
-
-/* ===== AI MODERN DESIGN ===== */
 
 .ai-card{
     background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(99,102,241,0.08));
@@ -290,8 +285,6 @@ html, body{
     transition:0.3s;
 }
 
-/* ===== MODERN LAPORAN TABLE ===== */
-
 .laporan-card{
     background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(56,189,248,0.08));
     backdrop-filter: blur(10px);
@@ -331,16 +324,6 @@ html, body{
     font-size:13px;
     opacity:0.7;
 }
-
-.laporan-table tbody tr{
-    background:rgba(255,255,255,0.04);
-}
-
-.laporan-table td{
-    padding:14px;
-}
-
-/* ===== DATE RANGE PRO ===== */
 
 .date-range-box{
     display:flex;
@@ -382,6 +365,7 @@ html, body{
     padding:6px 12px;
     border-radius:20px;
     transition:0.3s;
+    cursor:pointer;
 }
 
 .quick-btn:hover{
@@ -407,17 +391,10 @@ html, body{
     color:#facc15;
     font-weight:600;
 }
-.apexcharts-canvas{
-    margin: 0 auto;
-}
-
-.chart-card{
-    padding:25px;
-}
 
 .chart-wrapper{
     position:relative;
-    height:450px;   /* ini yang bikin normal */
+    height:450px;
     width:100%;
 }
 
@@ -457,39 +434,42 @@ html, body{
     margin-bottom:10px;
 }
 
-    #tsparticles{
+#tsparticles{
     position:fixed;
     inset:0;
     z-index:-2;
+}
+
+.stat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+    gap:15px;
+}
+
+.stat-item{
+    background:rgba(255,255,255,0.05);
+    padding:15px;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.stat-label{
+    font-size:14px;
+    opacity:0.8;
+}
+
+.stat-value{
+    font-size:20px;
+    font-weight:700;
+    color:#38bdf8;
 }
 
 </style>
 </head>
 
 <body>
-    <script>
-// HIDE LOADING SETELAH HALAMAN SIAP
-window.addEventListener("load", function(){
-    const loader = document.getElementById("loadingScreen");
-    setTimeout(()=>{
-        loader.classList.add("fade-out");
-    }, 800); // delay supaya smooth
-});
-
-        tsParticles.load("tsparticles", {
-    background: { color: "transparent" },
-    particles: {
-        number: { value: 40 },
-        color: { value: "#38bdf8" },
-        opacity: { value: 0.2 },
-        size: { value: 2 },
-        move: {
-            enable: true,
-            speed: 0.6
-        }
-    }
-});
-</script>
 
 <!-- LOADING SCREEN -->
 <div id="loadingScreen">
@@ -503,6 +483,9 @@ window.addEventListener("load", function(){
 <div class="alert-custom" id="alertBox">
 ⚠️ PERINGATAN! Kondisi lingkungan tidak normal!
 </div>
+
+<div id="tsparticles"></div>
+<div class="ai-grid"></div>
 
 <div class="container-fluid">
 <div class="row">
@@ -586,13 +569,13 @@ $latest = $data[0];
 
 </div>
 
-<!-- ================= GRAFIK FULL WIDTH ================= -->
+<!-- GRAFIK FULL WIDTH -->
 <div class="row">
     <div class="col-12">
         <div class="card-custom mb-4 chart-card">
             <div class="ai-clock" id="aiClock"></div>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
                     <h5 class="mb-1">📊 Grafik Parameter Real-Time</h5>
                     <small id="lastUpdate" style="opacity:0.6;"></small>
                 </div>
@@ -610,194 +593,13 @@ $latest = $data[0];
     Data diambil otomatis dari ESP32 melalui Supabase Cloud setiap 10 detik
 </div>
 
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-    
-    const canvas = document.getElementById("chartMulti");
-    if(!canvas){
-        console.log("Canvas tidak ditemukan");
-        return;
-    }
-    const ctx = document.getElementById("chartMulti").getContext("2d");
-
-    const gradientSuhu = ctx.createLinearGradient(0,0,0,400);
-    gradientSuhu.addColorStop(0,"rgba(239,68,68,0.4)");
-    gradientSuhu.addColorStop(1,"rgba(239,68,68,0)");
-
-    const gradientKelembaban = ctx.createLinearGradient(0,0,0,400);
-    gradientKelembaban.addColorStop(0,"rgba(34,197,94,0.4)");
-    gradientKelembaban.addColorStop(1,"rgba(34,197,94,0)");
-
-    const gradientTanah = ctx.createLinearGradient(0,0,0,400);
-    gradientTanah.addColorStop(0,"rgba(59,130,246,0.4)");
-    gradientTanah.addColorStop(1,"rgba(59,130,246,0)");
-
-    const gradientAngin = ctx.createLinearGradient(0,0,0,400);
-    gradientAngin.addColorStop(0,"rgba(250,204,21,0.4)");
-    gradientAngin.addColorStop(1,"rgba(250,204,21,0)");
-
-    let chart = new Chart(ctx,{
-        type:"line",
-        data:{
-            labels:[],
-            datasets:[
-                {
-                    label:"🌡 Suhu",
-                    data:[],
-                    borderColor:"#ef4444",
-                    backgroundColor:gradientSuhu,
-                    fill:true,
-                    tension:0.4,
-                    pointRadius:4,
-                    pointHoverRadius:7
-                },
-                {
-                    label:"💧 Kelembaban",
-                    data:[],
-                    borderColor:"#22c55e",
-                    backgroundColor:gradientKelembaban,
-                    fill:true,
-                    tension:0.4,
-                    pointRadius:4,
-                    pointHoverRadius:7
-                },
-                {
-                    label:"🌱 Tanah",
-                    data:[],
-                    borderColor:"#3b82f6",
-                    backgroundColor:gradientTanah,
-                    fill:true,
-                    tension:0.4,
-                    pointRadius:4,
-                    pointHoverRadius:7
-                },
-                {
-                    label:"🌬 Angin",
-                    data:[],
-                    borderColor:"#facc15",
-                    backgroundColor:gradientAngin,
-                    fill:true,
-                    tension:0.4,
-                    pointRadius:4,
-                    pointHoverRadius:7
-                }
-            ]
-        },
-      
-    options:{
-    responsive:true,
-    maintainAspectRatio:false,
-
-    animation:{
-        duration: 900,
-        easing: 'easeOutQuart'
-    },
-
-    interaction:{
-        mode:"index",
-        intersect:false
-    },
-
-    plugins:{
-        legend:{
-            position:"top",
-            labels:{
-                color:"white",
-                padding:20
-                }
-            },
-            tooltip:{
-                backgroundColor:"#0f172a",
-                borderColor:"#38bdf8",
-                borderWidth:1,
-                padding:12,
-                displayColors:true
-            }
-        },
-        scales:{
-            x:{
-                ticks:{color:"#94a3b8"},
-                grid:{color:"rgba(255,255,255,0.05)"}
-            },
-            y:{
-                ticks:{color:"#94a3b8"},
-                grid:{color:"rgba(255,255,255,0.05)"}
-            
-            }
-        }
-    }
-});
-
-    function loadData(){
-        console.log("Ambil data...");
-        fetch("ambil_data_supabase.php?t=" + new Date().getTime())
-        .then(res=>res.json())
-        .then(data=>{
-
-            if(!data || data.length===0) return;
-
-            data.reverse();
-
-            chart.data.labels = data.map(d=> 
-                new Date(d.created_at).toLocaleTimeString()
-            );
-
-            chart.data.datasets[0].data = data.map(d=>d.suhu_udara);
-            chart.data.datasets[1].data = data.map(d=>d.kelembaban_udara);
-            chart.data.datasets[2].data = data.map(d=>d.kadar_air_tanah);
-            chart.data.datasets[3].data = data.map(d=>d.kecepatan_angin);
-
-            if(chart.data.labels.length > 50){
-    chart.data.labels.shift();
-    chart.data.datasets.forEach(ds => ds.data.shift());
-}
-            chart.update('active');
-            
-
-if(!data || data.length === 0){     console.log("Data kosong");     return; }  const last = data[data.length-1];
-
-let status = "NORMAL";
-let color = "#22c55e";
-
-if(last.suhu_udara > 32){
-    status = "OVERHEAT";
-    color = "#ef4444";
-}
-
-document.getElementById("lastUpdate").innerHTML =
-    `<span style="color:${color}">
-        AI Status: ${status} | ${new Date().toLocaleTimeString()}
-     </span>`;
-            
-        });
-    }
-
-    loadData();
-    setInterval(loadData,10000);
-
-    function updateClock(){
-    const now = new Date();
-    document.getElementById("aiClock").innerText =
-        now.toLocaleTimeString();
-        
-}
-setInterval(updateClock,1000);
-updateClock();
-
-</script>
-
 <?php endif; ?>
-
 
 <?php
 /* ======================================================
    HALAMAN ANALISIS
 ====================================================== */
- elseif($page=='analisis'):
-
-
+elseif($page=='analisis'):
 
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 50;
 
@@ -824,27 +626,25 @@ $tanah = array_column($dataArr,'kadar_air_tanah');
 $angin = array_column($dataArr,'kecepatan_angin');
 
 $stat = [
-'rata_suhu'=>array_sum($suhu)/count($suhu),
-'max_suhu'=>max($suhu),
-'min_suhu'=>min($suhu),
-'rata_k'=>array_sum($kelembaban)/count($kelembaban),
-'rata_soil'=>array_sum($tanah)/count($tanah),
-'rata_angin'=>array_sum($angin)/count($angin)
+    'rata_suhu'=>array_sum($suhu)/count($suhu),
+    'max_suhu'=>max($suhu),
+    'min_suhu'=>min($suhu),
+    'rata_k'=>array_sum($kelembaban)/count($kelembaban),
+    'rata_soil'=>array_sum($tanah)/count($tanah),
+    'rata_angin'=>array_sum($angin)/count($angin)
 ];
 ?>
 
 <h3 class="mb-4">Analisis Statistik Lingkungan</h3>
 
- <!-- AI Environmental Index -->
-  <div class="card-custom mb-4 ai-card">
+<!-- AI Environmental Index -->
+<div class="card-custom mb-4 ai-card">
     <h5>AI Environmental Index</h5>
-
     <div style="background:#1e293b; border-radius:20px; overflow:hidden; height:28px;">
         <div id="indexBar"
              style="height:100%; width:0%; background:#22c55e; text-align:center; color:white; font-weight:600; line-height:28px;">
         </div>
     </div>
-
     <div id="indexLabel" style="margin-top:10px;"></div>
 </div>
     
@@ -853,7 +653,7 @@ $stat = [
     <form method="GET">
         <input type="hidden" name="page" value="analisis">
         <label class="me-2">Tampilkan Data:</label>
-        <select name="limit" onchange="this.form.submit()" class="form-select w-25 d-inline-block">
+        <select name="limit" onchange="this.form.submit()" class="form-select w-25 d-inline-block" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);">
             <option value="20" <?= $limit==20?'selected':'' ?>>20 Data</option>
             <option value="50" <?= $limit==50?'selected':'' ?>>50 Data</option>
             <option value="100" <?= $limit==100?'selected':'' ?>>100 Data</option>
@@ -868,36 +668,40 @@ $stat = [
 <div class="stat-grid">
 
     <div class="stat-item">
-        <span class="stat-label">Rata-rata Suhu Udara   :</span>
+        <span class="stat-label">Rata-rata Suhu Udara:</span>
         <span class="stat-value"><?= round($stat['rata_suhu'],2) ?> °C</span>
     </div>
 
     <div class="stat-item">
-        <span class="stat-label">Suhu Maksimum :</span>
+        <span class="stat-label">Suhu Maksimum:</span>
         <span class="stat-value"><?= $stat['max_suhu'] ?> °C</span>
     </div>
 
     <div class="stat-item">
-        <span class="stat-label">Suhu Minimum :</span>
+        <span class="stat-label">Suhu Minimum:</span>
         <span class="stat-value"><?= $stat['min_suhu'] ?> °C</span>
     </div>
 
     <div class="stat-item">
-        <span class="stat-label">Rata-rata Kelembaban Udara :</span>
+        <span class="stat-label">Rata-rata Kelembaban Udara:</span>
         <span class="stat-value"><?= round($stat['rata_k'],2) ?> %</span>
     </div>
 
     <div class="stat-item">
-        <span class="stat-label">Rata-rata Kadar Air Tanah  :</span>
+        <span class="stat-label">Rata-rata Kadar Air Tanah:</span>
         <span class="stat-value"><?= round($stat['rata_soil'],2) ?> %</span>
     </div>
 
     <div class="stat-item">
-        <span class="stat-label">Rata-rata Kecepatan Angin  :</span>
+        <span class="stat-label">Rata-rata Kecepatan Angin:</span>
         <span class="stat-value"><?= round($stat['rata_angin'],2) ?> m/s</span>
     </div>
 
-    <div class="card-custom mb-4 ai-card">
+</div>
+</div>
+
+<!-- AI FORECAST -->
+<div class="card-custom mb-4 ai-card">
     <h5 class="mb-4">
         <i class="bi bi-cpu"></i> AI Forecast & Anomaly Detection
     </h5>
@@ -943,74 +747,6 @@ $stat = [
     </div>
 </div>
 
-</div>
-</div>
-
-<script>
-
-const dataAnalisis = <?= json_encode($dataArr ?? []) ?>;
-
-function linearRegression(y){
-    let n = y.length;
-    let sumX=0,sumY=0,sumXY=0,sumXX=0;
-
-    for(let i=0;i<n;i++){
-        sumX += i;
-        sumY += y[i];
-        sumXY += i*y[i];
-        sumXX += i*i;
-    }
-
-    let slope = (n*sumXY - sumX*sumY)/(n*sumXX - sumX*sumX);
-    let intercept = (sumY - slope*sumX)/n;
-
-    return {slope,intercept};
-    }
-
-});
-</script>
-    
-<script>
-
-    const bar = document.getElementById("indexBar");
-    const label = document.getElementById("indexLabel");
-
-    if(!bar || !label) return;
-
-   let avgTemp = parseFloat("<?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>");
-    if(isNaN(avgTemp)) avgTemp = 0;
-    
-    let score = 100 - Math.abs(avgTemp - 28) * 5;
-    if(score < 0) score = 0;
-    if(score > 100) score = 100;
-
-    bar.style.transition = "width 1.5s ease";
-    bar.style.width = score + "%";
-    bar.innerText = Math.round(score) + "%";
-
-    let status = "OPTIMAL";
-    let color = "#22c55e";
-
-    if(score < 60){
-        status = "WARNING";
-        color = "#facc15";
-    }
-
-    if(score < 40){
-        status = "CRITICAL";
-        color = "#ef4444";
-    }
-
-    bar.style.backgroundColor = color;
-
-    label.innerHTML =
-        `<strong>Status:</strong>
-         <span style="color:${color}; font-weight:600;">
-            ${status}
-         </span>`;
-});
-</script>
-
 <!-- Tren Data -->
 <div class="card-custom mb-4">
 <h5 class="mb-4">Ringkasan Kondisi Terkini</h5>
@@ -1022,7 +758,6 @@ $last = end($dataArr);
 $prev = prev($dataArr);
 
 function trendInfo($now,$before){
-
     $diff = $now - $before;
 
     if($before == 0){
@@ -1077,21 +812,12 @@ function trendInfo($now,$before){
 <div class="p-3 bg-dark rounded">
 <h6>Kecepatan Angin</h6>
 <h3><?= $last['kecepatan_angin'] ?> m/s</h3>
-<div><?= trendInfo($last['kecepatan_angin'],$prev['kecepatan_angin']) ?> Trend</div>
+<div><?= trendInfo($last['kecepatan_angin'],$prev['kecepatan_angin']) ?></div>
 </div>
 </div>
 
 </div>
 </div>
-
-
-<?php
-// include "koneksi.php";
-$page = isset($_GET['page']) ? $_GET['page'] : 'beranda';
-$supabaseUrl = "https://fykjfyieanedfjrctrdi.supabase.co/rest/v1/data_sensor";
-$supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5a2pmeWllYW5lZGZqcmN0cmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDYxMDksImV4cCI6MjA4Nzg4MjEwOX0.-_HYcQXNrj065l7GO-uRkTviTPv0caYaqNZsfl1aDfQ";
-
-?>
 
 <?php endif; ?>
 
@@ -1102,7 +828,7 @@ $supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 elseif($page=='laporan'):  
 
 $result = getSupabaseData(
-    $supabaseUrl."?select=*&order=created_at.desc&limit=20",
+    $supabaseUrl."?select=*&order=created_at.desc&limit=100",
     $supabaseKey
 );
 
@@ -1113,28 +839,8 @@ if(empty($result)):
     <h4>⚠ Tidak Ada Data Laporan</h4>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jspdf/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable"></script>
+<?php else: ?>
 
-<script>
-async function exportPDF(){
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    doc.text("Laporan Monitoring Agroklimat", 14, 15);
-
-    doc.autoTable({
-        html: '.laporan-table',
-        startY: 20
-    });
-
-    doc.save("laporan_monitoring.pdf");
-}
-</script>
-
-<?php else:
-?>
 <div class="card-custom laporan-card">
     <h5 class="mb-4">
         <i class="bi bi-clipboard-data"></i> Laporan Data Pengamatan
@@ -1143,7 +849,6 @@ async function exportPDF(){
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
 
     <div class="date-range-box">
-
         <label>📅 From</label>
         <input type="date" id="dateFrom" class="date-input">
 
@@ -1157,20 +862,23 @@ async function exportPDF(){
         <button class="btn btn-sm btn-outline-light" onclick="resetFilter()">
             Reset
         </button>
-
     </div>
 
     <div class="quick-filter-box">
-
         <button class="quick-btn" onclick="filterToday()">Hari Ini</button>
         <button class="quick-btn" onclick="filter7Days()">7 Hari</button>
-
     </div>
 
     <div>
-        <button class="btn btn-outline-light btn-sm" onclick="exportExcel()">Excel</button>
-        <button class="btn btn-outline-light btn-sm" onclick="exportPDF()">PDF</button>
+        <button class="btn btn-outline-light btn-sm" onclick="exportExcel()">
+            <i class="bi bi-file-earmark-excel"></i> Excel
+        </button>
+        <button class="btn btn-outline-light btn-sm" onclick="exportPDF()">
+            <i class="bi bi-file-earmark-pdf"></i> PDF
+        </button>
     </div>
+
+</div>
 
 <div class="row mb-4">
 
@@ -1203,23 +911,6 @@ async function exportPDF(){
     </div>
 
 </div>
-    
-</div>
-<script>
-const searchInput = document.getElementById("searchInput");
-if(searchInput)
-    searchInput.addEventListener("keyup", function(){
-    let filter = this.value.toLowerCase();
-    let rows = document.querySelectorAll(".laporan-table tbody tr");
-
-    rows.forEach(row => {
-        row.style.display =
-            row.innerText.toLowerCase().includes(filter)
-            ? "" : "none";
-    });
-
-});
-</script>
 
     <div class="table-responsive">
         <table class="table table-borderless align-middle laporan-table">
@@ -1251,381 +942,272 @@ if(searchInput)
     </div>
 </div>
 
-<script>
-
-
-    
-// Ambil semua tanggal unik dari tabel
-function populateDateFilter(){
-
-    let rows = document.querySelectorAll(".laporan-table tbody tr");
-    let dateSet = new Set();
-
-    rows.forEach(row => {
-
-        let dateCell = row.cells[5].innerText; 
-        let dateOnly = dateCell.split(',')[0]; // ambil tanggal saja
-
-        dateSet.add(dateOnly);
-    });
-
-    let dropdown = document.getElementById("dateFilter");
-
-    dateSet.forEach(date => {
-        let option = document.createElement("option");
-        option.value = date;
-        option.textContent = date;
-        dropdown.appendChild(option);
-    });
-
-}
-
-
-
-document.getElementById("datePicker").addEventListener("change", function(){
-
-    let selectedDate = this.value; // format YYYY-MM-DD
-    let rows = document.querySelectorAll(".laporan-table tbody tr");
-
-    rows.forEach(row => {
-
-        let rawDate = row.cells[5].innerText;
-        let rowDate = new Date(rawDate).toISOString().split('T')[0];
-
-        if(rowDate === selectedDate){
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-
-    });
-
-});
-
-function resetFilter(){
-
-    document.getElementById("datePicker").value = "";
-
-    let rows = document.querySelectorAll(".laporan-table tbody tr");
-    rows.forEach(row => row.style.display = "");
-
-}
-
-populateDateFilter();
-</script>
-// Filter berdasarkan tanggal
-<div class="d-flex justify-content-between align-items-center mb-3">
-
-    <div class="date-filter-box">
-        <label class="me-2">📅 Pilih Tanggal:</label>
-        <input type="date" id="datePicker" class="date-input">
-        <button class="btn btn-sm btn-outline-light ms-2" onclick="resetFilter()">Reset</button>
-    </div>
-
-    <div>
-        <button class="btn btn-outline-light btn-sm" onclick="exportExcel()">Excel</button>
-        <button class="btn btn-outline-light btn-sm" onclick="exportPDF()">PDF</button>
-    </div>
-
-</div>
+<?php endif; ?>
 
 <?php endif; ?>
-<?php endif; ?>
+
 </div>
 </div>
 </div>
 
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+// LOADING SCREEN
 window.addEventListener("load", function(){
     const loader = document.getElementById("loadingScreen");
     setTimeout(()=>{
         loader.classList.add("fade-out");
     }, 800);
 });
-</script>
 
-
-<script>
-
-// ===== EXPORT EXCEL =====
-function exportExcel(){
-
-    let table = document.querySelector(".laporan-table");
-    if(!table){
-        alert("Tabel tidak ditemukan");
-        return;
-    }
-
-    let wb = XLSX.utils.table_to_book(table, {sheet:"History"});
-    XLSX.writeFile(wb, "history_monitoring.xlsx");
-
-}
-
-
-// ===== EXPORT PDF =====
-async function exportPDF(){
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    doc.text("History Monitoring Agroklimat", 14, 15);
-
-    doc.autoTable({
-        html: '.laporan-table',
-        startY: 20,
-        theme: 'grid'
-    });
-
-    doc.save("history_monitoring.pdf");
-
-}
-
-</script>
-
-
-
-<script>
-
-function getRowDate(row){
-    let raw = row.cells[5].innerText;
-    return new Date(raw);
-}
-
-function applyDateFilter(){
-
-    let from = document.getElementById("dateFrom").value;
-    let to = document.getElementById("dateTo").value;
-
-    if(!from || !to) return;
-
-    let fromDate = new Date(from);
-    let toDate = new Date(to);
-    toDate.setHours(23,59,59,999);
-
-    let rows = document.querySelectorAll(".laporan-table tbody tr");
-
-    rows.forEach(row => {
-
-        let rowDate = getRowDate(row);
-
-        if(rowDate >= fromDate && rowDate <= toDate){
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
+// PARTICLES
+if(typeof tsParticles !== 'undefined'){
+    tsParticles.load("tsparticles", {
+        background: { color: "transparent" },
+        particles: {
+            number: { value: 40 },
+            color: { value: "#38bdf8" },
+            opacity: { value: 0.2 },
+            size: { value: 2 },
+            move: {
+                enable: true,
+                speed: 0.6
+            }
         }
-
     });
-
-    activateGlow();
 }
 
-function filterToday(){
-
-    let today = new Date();
-    today.setHours(0,0,0,0);
-
-    let rows = document.querySelectorAll(".laporan-table tbody tr");
-
-    rows.forEach(row => {
-        let rowDate = getRowDate(row);
-        row.style.display =
-            rowDate >= today ? "" : "none";
-    });
-
-    activateGlow();
+// CLOCK
+function updateClock(){
+    const now = new Date();
+    const clock = document.getElementById("aiClock");
+    if(clock) clock.innerText = now.toLocaleTimeString();
 }
+setInterval(updateClock, 1000);
+updateClock();
 
-function filter7Days(){
-
-    let today = new Date();
-    let past = new Date();
-    past.setDate(today.getDate() - 7);
-
-    rows = document.querySelectorAll(".laporan-table tbody tr");
-
-    rows.forEach(row => {
-        let rowDate = getRowDate(row);
-        row.style.display =
-            rowDate >= past ? "" : "none";
-    });
-
-    activateGlow();
-}
-
-function resetFilter(){
-
-    document.getElementById("dateFrom").value = "";
-    document.getElementById("dateTo").value = "";
-
-    let rows = document.querySelectorAll(".laporan-table tbody tr");
-    rows.forEach(row => row.style.display = "");
-
-    document.querySelector(".laporan-card").classList.remove("filter-active");
-}
-
-function activateGlow(){
-    document.querySelector(".laporan-card").classList.add("filter-active");
-}
-
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-<script>
 document.addEventListener("DOMContentLoaded", function(){
 
-    if(!document.querySelector("#gaugeSuhu")) return;
+    const page = new URLSearchParams(window.location.search).get("page") || "beranda";
 
-    const suhu = <?= $latest['suhu_udara'] ?? 0 ?>;
-    const kelembaban = <?= $latest['kelembaban_udara'] ?? 0 ?>;
-    const tanah = <?= $latest['kadar_air_tanah'] ?? 0 ?>;
-    const angin = <?= $latest['kecepatan_angin'] ?? 0 ?>;
+    /* =========================================================
+       BERANDA
+    ========================================================== */
+    if(page === "beranda"){
 
-    function renderGauge(id, value, unit, color){
+        // GAUGE
+        if(typeof ApexCharts !== "undefined" && document.querySelector("#gaugeSuhu")){
 
-        var options = {
-            series: [value],
-            chart: {
-                height: 230,
-                type: 'radialBar'
-            },
-            plotOptions: {
-                radialBar: {
-                    hollow: { size: '70%' },
-                    dataLabels: {
-                        name: { show: false },
-                        value: {
-                            fontSize: '22px',
-                            color: '#fff',
-                            formatter: function(val){
-                                return val + " " + unit;
+            const suhu = <?= isset($latest['suhu_udara']) ? $latest['suhu_udara'] : 0 ?>;
+            const kelembaban = <?= isset($latest['kelembaban_udara']) ? $latest['kelembaban_udara'] : 0 ?>;
+            const tanah = <?= isset($latest['kadar_air_tanah']) ? $latest['kadar_air_tanah'] : 0 ?>;
+            const angin = <?= isset($latest['kecepatan_angin']) ? $latest['kecepatan_angin'] : 0 ?>;
+
+            function renderGauge(id,value,unit,color){
+                new ApexCharts(document.querySelector(id),{
+                    series:[value],
+                    chart:{height:230,type:'radialBar'},
+                    plotOptions:{
+                        radialBar:{
+                            hollow:{size:'70%'},
+                            dataLabels:{
+                                name:{show:false},
+                                value:{
+                                    fontSize:'22px',
+                                    color:'#fff',
+                                    formatter:(val)=>val+" "+unit
+                                }
                             }
+                        }
+                    },
+                    colors:[color],
+                    stroke:{lineCap:'round'}
+                }).render();
+            }
+
+            renderGauge("#gaugeSuhu",suhu,"°C","#ef4444");
+            renderGauge("#gaugeKelembaban",kelembaban,"%","#22c55e");
+            renderGauge("#gaugeTanah",tanah,"%","#3b82f6");
+            renderGauge("#gaugeAngin",angin,"m/s","#facc15");
+        }
+
+        // CHART
+        const canvas = document.getElementById("chartMulti");
+        if(canvas){
+            const ctx = canvas.getContext("2d");
+
+            const gradientSuhu = ctx.createLinearGradient(0,0,0,400);
+            gradientSuhu.addColorStop(0,"rgba(239,68,68,0.4)");
+            gradientSuhu.addColorStop(1,"rgba(239,68,68,0)");
+
+            const gradientKelembaban = ctx.createLinearGradient(0,0,0,400);
+            gradientKelembaban.addColorStop(0,"rgba(34,197,94,0.4)");
+            gradientKelembaban.addColorStop(1,"rgba(34,197,94,0)");
+
+            const gradientTanah = ctx.createLinearGradient(0,0,0,400);
+            gradientTanah.addColorStop(0,"rgba(59,130,246,0.4)");
+            gradientTanah.addColorStop(1,"rgba(59,130,246,0)");
+
+            const gradientAngin = ctx.createLinearGradient(0,0,0,400);
+            gradientAngin.addColorStop(0,"rgba(250,204,21,0.4)");
+            gradientAngin.addColorStop(1,"rgba(250,204,21,0)");
+
+            let chart = new Chart(ctx,{
+                type:"line",
+                data:{
+                    labels:[],
+                    datasets:[
+                        {
+                            label:"🌡 Suhu",
+                            data:[],
+                            borderColor:"#ef4444",
+                            backgroundColor:gradientSuhu,
+                            fill:true,
+                            tension:0.4,
+                            pointRadius:4,
+                            pointHoverRadius:7
+                        },
+                        {
+                            label:"💧 Kelembaban",
+                            data:[],
+                            borderColor:"#22c55e",
+                            backgroundColor:gradientKelembaban,
+                            fill:true,
+                            tension:0.4,
+                            pointRadius:4,
+                            pointHoverRadius:7
+                        },
+                        {
+                            label:"🌱 Tanah",
+                            data:[],
+                            borderColor:"#3b82f6",
+                            backgroundColor:gradientTanah,
+                            fill:true,
+                            tension:0.4,
+                            pointRadius:4,
+                            pointHoverRadius:7
+                        },
+                        {
+                            label:"🌬 Angin",
+                            data:[],
+                            borderColor:"#facc15",
+                            backgroundColor:gradientAngin,
+                            fill:true,
+                            tension:0.4,
+                            pointRadius:4,
+                            pointHoverRadius:7
+                        }
+                    ]
+                },
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false,
+                    animation:{
+                        duration: 900,
+                        easing: 'easeOutQuart'
+                    },
+                    interaction:{
+                        mode:"index",
+                        intersect:false
+                    },
+                    plugins:{
+                        legend:{
+                            position:"top",
+                            labels:{
+                                color:"white",
+                                padding:20
+                            }
+                        },
+                        tooltip:{
+                            backgroundColor:"#0f172a",
+                            borderColor:"#38bdf8",
+                            borderWidth:1,
+                            padding:12,
+                            displayColors:true
+                        }
+                    },
+                    scales:{
+                        x:{
+                            ticks:{color:"#94a3b8"},
+                            grid:{color:"rgba(255,255,255,0.05)"}
+                        },
+                        y:{
+                            ticks:{color:"#94a3b8"},
+                            grid:{color:"rgba(255,255,255,0.05)"}
                         }
                     }
                 }
-            },
-            colors: [color],
-            stroke: { lineCap: 'round' }
-        };
+            });
 
-        var chart = new ApexCharts(document.querySelector(id), options);
-        chart.render();
+            function loadData(){
+                fetch("ambil_data_supabase.php?t=" + new Date().getTime())
+                .then(res=>res.json())
+                .then(data=>{
+                    if(!data || data.length===0) return;
+
+                    data.reverse();
+
+                    chart.data.labels = data.map(d=> 
+                        new Date(d.created_at).toLocaleTimeString()
+                    );
+
+                    chart.data.datasets[0].data = data.map(d=>d.suhu_udara);
+                    chart.data.datasets[1].data = data.map(d=>d.kelembaban_udara);
+                    chart.data.datasets[2].data = data.map(d=>d.kadar_air_tanah);
+                    chart.data.datasets[3].data = data.map(d=>d.kecepatan_angin);
+
+                    if(chart.data.labels.length > 50){
+                        chart.data.labels.shift();
+                        chart.data.datasets.forEach(ds => ds.data.shift());
+                    }
+                    
+                    chart.update('active');
+
+                    const last = data[data.length-1];
+                    let status = "NORMAL";
+                    let color = "#22c55e";
+
+                    if(last.suhu_udara > 32){
+                        status = "OVERHEAT";
+                        color = "#ef4444";
+                    }
+
+                    const updateEl = document.getElementById("lastUpdate");
+                    if(updateEl){
+                        updateEl.innerHTML =
+                            `<span style="color:${color}">
+                                AI Status: ${status} | ${new Date().toLocaleTimeString()}
+                             </span>`;
+                    }
+                })
+                .catch(err => console.error("Error loading data:", err));
+            }
+
+            loadData();
+            setInterval(loadData, 10000);
+        }
     }
 
-    renderGauge("#gaugeSuhu", suhu, "°C", "#22c55e");
-    renderGauge("#gaugeKelembaban", kelembaban, "%", "#3b82f6");
-    renderGauge("#gaugeTanah", tanah, "%", "#facc15");
-    renderGauge("#gaugeAngin", angin, "m/s", "#ef4444");
-
-
-});
-
-    const bar = document.getElementById("indexBar");
-    const label = document.getElementById("indexLabel");
-
-    if(!bar || !label) return;
-
-    let avgTemp = parseFloat("<?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>");
-
-    let score = 100 - Math.abs(avgTemp - 28) * 5;
-
-    if(isNaN(score)) score = 0;
-    if(score < 0) score = 0;
-    if(score > 100) score = 100;
-
-    bar.style.transition = "width 1.5s ease";
-    bar.style.width = score + "%";
-    bar.innerText = Math.round(score) + "%";
-
-    let status = "OPTIMAL";
-    let color = "#22c55e";
-
-    if(score < 60){
-        status = "WARNING";
-        color = "#facc15";
-    }
-
-    if(score < 40){
-        status = "CRITICAL";
-        color = "#ef4444";
-    }
-
-    bar.style.backgroundColor = color;
-
-    label.innerHTML =
-        `<strong>Status:</strong>
-         <span style="color:${color}; font-weight:600;">
-            ${status}
-         </span>`;
-});
-
-</script>
-
-
-<div class="ai-grid"></div> 
-
-<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
-    <div id="tsparticles"></div>
-
-
-    <script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    const page = new URLSearchParams(window.location.search).get("page");
-
-    /* ================= ANALISIS PAGE ================= */
+    /* =========================================================
+       ANALISIS
+    ========================================================== */
     if(page === "analisis"){
 
-        const dataAnalisis = <?= json_encode($dataArr ?? []) ?>;
-
-        if(dataAnalisis && dataAnalisis.length >= 3){
-
-            function linearRegression(y){
-                let n = y.length;
-                let sumX=0,sumY=0,sumXY=0,sumXX=0;
-
-                for(let i=0;i<n;i++){
-                    sumX+=i;
-                    sumY+=y[i];
-                    sumXY+=i*y[i];
-                    sumXX+=i*i;
-                }
-
-                let slope=(n*sumXY - sumX*sumY)/(n*sumXX - sumX*sumX);
-                let intercept=(sumY - slope*sumX)/n;
-
-                return {slope,intercept};
-            }
-
-            function predict(data){
-                let model = linearRegression(data);
-                return model.intercept + model.slope*(data.length+60);
-            }
-
-            let suhu = dataAnalisis.map(d=>parseFloat(d.suhu_udara));
-            let kelembaban = dataAnalisis.map(d=>parseFloat(d.kelembaban_udara));
-            let tanah = dataAnalisis.map(d=>parseFloat(d.kadar_air_tanah));
-            let angin = dataAnalisis.map(d=>parseFloat(d.kecepatan_angin));
-
-            document.getElementById("predSuhu").innerText = predict(suhu).toFixed(2)+" °C";
-            document.getElementById("predKelembaban").innerText = predict(kelembaban).toFixed(2)+" %";
-            document.getElementById("predTanah").innerText = predict(tanah).toFixed(2)+" %";
-            document.getElementById("predAngin").innerText = predict(angin).toFixed(2)+" m/s";
-        }
-
-        // ===== INDEX =====
         const bar = document.getElementById("indexBar");
         const label = document.getElementById("indexLabel");
 
         if(bar && label){
-
             let avgTemp = <?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>;
 
             let score = 100 - Math.abs(avgTemp - 28) * 5;
             score = Math.max(0, Math.min(100, score));
 
-            bar.style.width = score+"%";
-            bar.innerText = Math.round(score)+"%";
+            setTimeout(()=>{
+                bar.style.width = score+"%";
+                bar.innerText = Math.round(score)+"%";
+            }, 100);
 
             let status="OPTIMAL";
             let color="#22c55e";
@@ -1641,89 +1223,8 @@ document.addEventListener("DOMContentLoaded", function(){
                     ${status}
                  </span>`;
         }
-    }
 
-});
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    const page = new URLSearchParams(window.location.search).get("page") || "beranda";
-
-    /* =========================================================
-       BERANDA
-    ========================================================== */
-    if(page === "beranda"){
-
-        // ===== GAUGE =====
-        if(typeof ApexCharts !== "undefined" && document.querySelector("#gaugeSuhu")){
-
-            const suhu = <?= $latest['suhu_udara'] ?? 0 ?>;
-            const kelembaban = <?= $latest['kelembaban_udara'] ?? 0 ?>;
-            const tanah = <?= $latest['kadar_air_tanah'] ?? 0 ?>;
-            const angin = <?= $latest['kecepatan_angin'] ?? 0 ?>;
-
-            function renderGauge(id,value,unit,color){
-                new ApexCharts(document.querySelector(id),{
-                    series:[value],
-                    chart:{height:230,type:'radialBar'},
-                    plotOptions:{
-                        radialBar:{
-                            hollow:{size:'70%'},
-                            dataLabels:{
-                                name:{show:false},
-                                value:{
-                                    fontSize:'22px',
-                                    formatter:(val)=>val+" "+unit
-                                }
-                            }
-                        }
-                    },
-                    colors:[color]
-                }).render();
-            }
-
-            renderGauge("#gaugeSuhu",suhu,"°C","#22c55e");
-            renderGauge("#gaugeKelembaban",kelembaban,"%","#3b82f6");
-            renderGauge("#gaugeTanah",tanah,"%","#facc15");
-            renderGauge("#gaugeAngin",angin,"m/s","#ef4444");
-        }
-    }
-
-    /* =========================================================
-       ANALISIS
-    ========================================================== */
-    if(page === "analisis"){
-
-        const bar = document.getElementById("indexBar");
-        const label = document.getElementById("indexLabel");
-
-        if(bar && label){
-
-            let avgTemp = <?= isset($stat['rata_suhu']) ? round($stat['rata_suhu'],2) : 0 ?>;
-
-            let score = 100 - Math.abs(avgTemp - 28) * 5;
-            score = Math.max(0, Math.min(100, score));
-
-            bar.style.width = score+"%";
-            bar.innerText = Math.round(score)+"%";
-
-            let status="OPTIMAL";
-            let color="#22c55e";
-
-            if(score<60){ status="WARNING"; color="#facc15"; }
-            if(score<40){ status="CRITICAL"; color="#ef4444"; }
-
-            bar.style.backgroundColor=color;
-
-            label.innerHTML =
-                `<strong>Status:</strong>
-                 <span style="color:${color}; font-weight:600;">
-                    ${status}
-                 </span>`;
-        }
-
-        // ===== AI FORECAST =====
+        // AI FORECAST
         const dataAnalisis = <?= json_encode($dataArr ?? []) ?>;
 
         if(dataAnalisis && dataAnalisis.length >= 3){
@@ -1753,6 +1254,8 @@ document.addEventListener("DOMContentLoaded", function(){
             document.getElementById("predKelembaban").innerText = predict(kelembaban).toFixed(2)+" %";
             document.getElementById("predTanah").innerText = predict(tanah).toFixed(2)+" %";
             document.getElementById("predAngin").innerText = predict(angin).toFixed(2)+" m/s";
+
+            document.getElementById("anomalyStatus").innerText = "Status: Normal";
         }
     }
 
@@ -1762,33 +1265,144 @@ document.addEventListener("DOMContentLoaded", function(){
     if(page === "laporan"){
 
         const rows = document.querySelectorAll(".laporan-table tbody tr");
-        if(rows.length === 0) return;
+        if(rows.length > 0){
 
-        let temps = [];
-        let overheat = 0;
+            let temps = [];
+            let overheat = 0;
 
-        rows.forEach(row=>{
-            let temp = parseFloat(row.cells[1].innerText);
-            temps.push(temp);
+            rows.forEach(row=>{
+                let tempText = row.cells[1].innerText;
+                let temp = parseFloat(tempText);
+                temps.push(temp);
 
-            if(temp > 32){
-                overheat++;
-                row.style.backgroundColor="rgba(239,68,68,0.15)";
-            }
-        });
+                if(temp > 32){
+                    overheat++;
+                    row.style.backgroundColor="rgba(239,68,68,0.15)";
+                }
+            });
 
-        document.getElementById("totalData").innerText = temps.length;
-        document.getElementById("maxTemp").innerText = Math.max(...temps)+" °C";
-        document.getElementById("minTemp").innerText = Math.min(...temps)+" °C";
-        document.getElementById("overheatCount").innerText = overheat;
+            document.getElementById("totalData").innerText = temps.length;
+            document.getElementById("maxTemp").innerText = Math.max(...temps)+" °C";
+            document.getElementById("minTemp").innerText = Math.min(...temps)+" °C";
+            document.getElementById("overheatCount").innerText = overheat;
+        }
     }
 
 });
+
+// FILTER FUNCTIONS
+function getRowDate(row){
+    let raw = row.cells[5].innerText;
+    return new Date(raw);
+}
+
+function applyDateFilter(){
+    let from = document.getElementById("dateFrom").value;
+    let to = document.getElementById("dateTo").value;
+
+    if(!from || !to) return;
+
+    let fromDate = new Date(from);
+    let toDate = new Date(to);
+    toDate.setHours(23,59,59,999);
+
+    let rows = document.querySelectorAll(".laporan-table tbody tr");
+
+    rows.forEach(row => {
+        let rowDate = getRowDate(row);
+
+        if(rowDate >= fromDate && rowDate <= toDate){
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    activateGlow();
+}
+
+function filterToday(){
+    let today = new Date();
+    today.setHours(0,0,0,0);
+
+    let rows = document.querySelectorAll(".laporan-table tbody tr");
+
+    rows.forEach(row => {
+        let rowDate = getRowDate(row);
+        row.style.display = rowDate >= today ? "" : "none";
+    });
+
+    activateGlow();
+}
+
+function filter7Days(){
+    let today = new Date();
+    let past = new Date();
+    past.setDate(today.getDate() - 7);
+
+    let rows = document.querySelectorAll(".laporan-table tbody tr");
+
+    rows.forEach(row => {
+        let rowDate = getRowDate(row);
+        row.style.display = rowDate >= past ? "" : "none";
+    });
+
+    activateGlow();
+}
+
+function resetFilter(){
+    document.getElementById("dateFrom").value = "";
+    document.getElementById("dateTo").value = "";
+
+    let rows = document.querySelectorAll(".laporan-table tbody tr");
+    rows.forEach(row => row.style.display = "");
+
+    const card = document.querySelector(".laporan-card");
+    if(card) card.classList.remove("filter-active");
+}
+
+function activateGlow(){
+    const card = document.querySelector(".laporan-card");
+    if(card) card.classList.add("filter-active");
+}
+
+// EXPORT FUNCTIONS
+function exportExcel(){
+    let table = document.querySelector(".laporan-table");
+    if(!table){
+        alert("Tabel tidak ditemukan");
+        return;
+    }
+
+    if(typeof XLSX === 'undefined'){
+        alert("Library XLSX belum dimuat");
+        return;
+    }
+
+    let wb = XLSX.utils.table_to_book(table, {sheet:"History"});
+    XLSX.writeFile(wb, "history_monitoring.xlsx");
+}
+
+function exportPDF(){
+    if(typeof jspdf === 'undefined'){
+        alert("Library jsPDF belum dimuat");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.text("History Monitoring Agroklimat", 14, 15);
+
+    doc.autoTable({
+        html: '.laporan-table',
+        startY: 20,
+        theme: 'grid'
+    });
+
+    doc.save("history_monitoring.pdf");
+}
 </script>
 
-        
-        
-</script>
-    
 </body>
 </html>
