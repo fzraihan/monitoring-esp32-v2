@@ -960,7 +960,7 @@ $latest = $data[0];
 </div>
 
 <div class="text-end" style="opacity:0.5; font-size:12px;">
-    Data diambil otomatis dari ESP32 melalui Supabase Cloud setiap 10 detik
+    Data diambil otomatis dari ESP32 melalui Supabase Cloud 
 </div>
 
 <?php endif; ?>
