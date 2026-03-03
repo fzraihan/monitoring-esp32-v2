@@ -1477,7 +1477,9 @@ document.addEventListener("DOMContentLoaded", function(){
     ========================================================== */
     if(page === "beranda"){
 
-        // GAUGE
+        // GAUGE - store instances for real-time updates
+        var gaugeSuhu, gaugeKelembaban, gaugeTanah, gaugeAngin;
+
         if(typeof ApexCharts !== "undefined" && document.querySelector("#gaugeSuhu")){
 
             const suhu = <?= isset($latest['suhu_udara']) ? $latest['suhu_udara'] : 0 ?>;
@@ -1485,10 +1487,22 @@ document.addEventListener("DOMContentLoaded", function(){
             const tanah = <?= isset($latest['kadar_air_tanah']) ? $latest['kadar_air_tanah'] : 0 ?>;
             const angin = <?= isset($latest['kecepatan_angin']) ? $latest['kecepatan_angin'] : 0 ?>;
 
-            function renderGauge(id,value,unit,color){
-                new ApexCharts(document.querySelector(id),{
+            function createGauge(id,value,unit,color){
+                var chartInstance = new ApexCharts(document.querySelector(id),{
                     series:[value],
-                    chart:{height:230,type:'radialBar'},
+                    chart:{
+                        height:230,
+                        type:'radialBar',
+                        animations:{
+                            enabled:true,
+                            easing:'easeinout',
+                            speed:800,
+                            dynamicAnimation:{
+                                enabled:true,
+                                speed:500
+                            }
+                        }
+                    },
                     plotOptions:{
                         radialBar:{
                             hollow:{size:'70%'},
@@ -1504,13 +1518,15 @@ document.addEventListener("DOMContentLoaded", function(){
                     },
                     colors:[color],
                     stroke:{lineCap:'round'}
-                }).render();
+                });
+                chartInstance.render();
+                return chartInstance;
             }
 
-            renderGauge("#gaugeSuhu",suhu,"°C","#ef4444");
-            renderGauge("#gaugeKelembaban",kelembaban,"%","#22c55e");
-            renderGauge("#gaugeTanah",tanah,"%","#3b82f6");
-            renderGauge("#gaugeAngin",angin,"m/s","#facc15");
+            gaugeSuhu = createGauge("#gaugeSuhu",suhu,"°C","#ef4444");
+            gaugeKelembaban = createGauge("#gaugeKelembaban",kelembaban,"%","#22c55e");
+            gaugeTanah = createGauge("#gaugeTanah",tanah,"%","#3b82f6");
+            gaugeAngin = createGauge("#gaugeAngin",angin,"m/s","#facc15");
         }
 
         // CHART
@@ -1645,7 +1661,14 @@ document.addEventListener("DOMContentLoaded", function(){
                     
                     chart.update('active');
 
+                    // Update gauges with latest sensor data
                     const last = data[data.length-1];
+
+                    if(gaugeSuhu) gaugeSuhu.updateSeries([parseFloat(last.suhu_udara)]);
+                    if(gaugeKelembaban) gaugeKelembaban.updateSeries([parseFloat(last.kelembaban_udara)]);
+                    if(gaugeTanah) gaugeTanah.updateSeries([parseFloat(last.kadar_air_tanah)]);
+                    if(gaugeAngin) gaugeAngin.updateSeries([parseFloat(last.kecepatan_angin)]);
+
                     let status = "NORMAL";
                     let color = "#22c55e";
 
@@ -1658,7 +1681,7 @@ document.addEventListener("DOMContentLoaded", function(){
                     if(updateEl){
                         updateEl.innerHTML =
                             `<span style="color:${color}">
-                                AI Status: ${status} | ${new Date().toLocaleTimeString()}
+                                AI Status: ${status} | Terakhir diperbarui: ${new Date().toLocaleTimeString()}
                              </span>`;
                     }
                 })
